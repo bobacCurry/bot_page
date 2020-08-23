@@ -51,7 +51,7 @@ export default [
         path: '/user_setting',
         name: 'user_setting',
         meta: {
-          hideInMenu: true,
+          // hideInMenu: true,
           title: '用户设置'
         },
         component: () => import('@/view/index/user-setting.vue')

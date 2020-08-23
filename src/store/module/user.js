@@ -72,16 +72,18 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(({ data }) => {
-            const info = data.msg
+          getUserInfo().then(({ data }) => {
             if (data.success) {
+              const info = data.msg
               commit('setAvatar', info.avatar)
               commit('setUserName', info.name)
               commit('setUserId', info._id)
               commit('setAccess', info.access)
               commit('setHasGetInfo', true)
+              resolve(info)
+            }else{
+              reject(data.msg)
             }
-            resolve(info)
           }).catch(err => {
             reject(err)
           })
