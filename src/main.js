@@ -16,9 +16,13 @@ import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 import Moment from 'vue-moment'
+import Bus from '@/libs/bus'
+
 // 实际打包时应该不引入mock
 /* eslint-disable */
 //if (process.env.NODE_ENV !== 'production') require('@/mock')
+
+Vue.prototype.$bus = Bus    // 注册到vue的根实例里，给vue原生对象上添加bus属性
 
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)

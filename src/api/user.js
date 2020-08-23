@@ -24,7 +24,7 @@ export const getUserInfo = (token) => {
   return axios.request({
     url: 'account/get_info',
     params: {
-      token
+      //token
     },
     method: 'get'
   })
