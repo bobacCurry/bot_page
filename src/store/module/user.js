@@ -72,7 +72,7 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(({ data }) => {
+          getUserInfo().then(({ data }) => {
             if (data.success) {
               const info = data.msg
               commit('setAvatar', info.avatar)
@@ -80,8 +80,10 @@ export default {
               commit('setUserId', info._id)
               commit('setAccess', info.access)
               commit('setHasGetInfo', true)
+              resolve(info)
+            }else{
+              reject(data.msg)
             }
-            resolve()
           }).catch(err => {
             reject(err)
           })

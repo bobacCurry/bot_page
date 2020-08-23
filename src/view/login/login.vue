@@ -31,7 +31,6 @@ export default {
           })
         }).catch(({response})=>{
           location.reload()
-          // this.$Notice.error({title:response.data.msg})
         })
       }).catch((e)=>{
         this.$Notice.error({title:e.response.data.msg})
