@@ -32,6 +32,7 @@
   </div>
 </template>
 <script>
+  import { mapActions } from 'vuex'
   export default {
     props: ['modalOptObj','formValidateObj'],
     data () {
@@ -55,17 +56,26 @@
       }
     },
     methods: {
+      ...mapActions([
+        'botEdit'
+      ]),
       handleSubmit (name) {
         this.modalOpt.loading = true
         this.$refs[name].validate((valid) => {
           if (valid) {
-            this.$Message.success('Success!')
-            setTimeout(() => {
-              this.modalOpt.loading = false
-              this.modalOpt.flag = false
-              this.$emit('setTableData', {modalOpt:this.modalOpt,formValidate:this.formValidate} ) //触发当前实例上的事件
-              this.$Message.success('修改成功')
-            }, 500)
+            this.botEdit(this.formValidate).then(res => {
+              if(res.success){
+                this.formValidate = res.data
+                this.modalOpt.loading = false
+                this.modalOpt.flag = false
+                this.$emit('setTableData', {modalOpt:this.modalOpt,formValidate:this.formValidate} ) //触发当前实例上的事件
+                this.$Message.success(res.msg)
+              }
+            }).catch((e)=>{
+              this.$Notice.error({title:e.response.data.msg})
+            })
+
+
           } else {
             this.$Message.error('Fail!')
             this.modalOpt.loading = false

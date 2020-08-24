@@ -24,6 +24,7 @@
 </template>
 <script>
   import myModal from './myModal.vue'
+  import { mapActions } from 'vuex'
   export default {
     components: {myModal},
     data () {
@@ -63,31 +64,30 @@
       }
     },
     mounted () {
-      this.tableData = this.mockTableData2()
+      this.mockTableData().then(data => {
+          this.tableData = data
+        })
 
       this.changeTableColumns()
     },
     methods: {
-      mockTableData2 () {
-        let data = []
-        function getNum() {
-          return Math.floor(Math.random () * 10000 + 1)
-        }
-        let num = (this.total-(this.page*this.size))>=0?this.size:(this.total-((this.page-1)*this.size))
-        for (let i = 0; i < num; i++) {
-          data.push({
-            name: `Name ${this.page} ` + (i+1),
-            username: `${getNum()}`,
-            token: `${getNum()}`,
-            type: `${getNum()}`,
-            status: 0,
-            created_at: `${getNum()}`,
-            updated_at: `${getNum()}`
-          })
-        }
-        return data
+      ...mapActions([
+        'getBotList',
+        'botStatusChange'
+      ]),
+      async mockTableData () {
+        let data = [],
+            page = this.page,
+            size = this.size
+        await this.getBotList({ page, size }).then(res => {
+          this.count = res.bot_count
+          data = res.bot_list
+        }).catch((e)=>{
+          this.$Notice.error({title:e.response.data.msg})
+        })
+        return Promise.resolve(data);
       },
-      getTable2Columns () {
+      getTableColumns () {
         const table2ColumnList = {
           selection: {
             type: 'selection',
@@ -101,19 +101,16 @@
             align: 'center',
             fixed: 'left',
             width: 120,
-            sortable: true
           },
           username: {
             title: 'username',
             key: 'username',
             width: 150,
-            sortable: true
           },
           token: {
             title: 'token',
             key: 'token',
             width: 150,
-            sortable: true
           },
           type: {
             title: 'type',
@@ -125,6 +122,7 @@
             title: 'status',
             key: 'status',
             width: 150,
+            sortable: true,
             render: (h, params) => {
               const row = params.row
               const color = row.status === 0 ? 'primary' : row.status === 1 ? 'success' : 'error'
@@ -171,7 +169,7 @@
         return data
       },
       changeTableColumns () {
-        this.tableColumns = this.getTable2Columns()
+        this.tableColumns = this.getTableColumns()
       },
       setStatus (status) {
         let selection = this.$refs.selection.getSelection()
@@ -180,34 +178,35 @@
           return
         }
 
-        let indexArr = []
-        selection.forEach((item) => {
-          indexArr.push(item.name)
-        })
-        console.log(indexArr)
-
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-        }, 500)
-
-        let tableData = this.$refs.selection.data
         let selectionData = this.$refs.selection.objData
+        let id_list = []
+        let index_list = []
         Object.keys(selectionData).forEach((index) => {
           if(selectionData[index]._isChecked){
-            tableData[index].status = status
+            id_list.push(selectionData[index]._id)
+            index_list.push(index)
           }
+        })
+
+        this.botStatusChange({ id_list, status }).then(res => {
+          index_list.forEach((index) => {
+            this.tableData[index].status = status
+          })
+        }).catch((e)=>{
+          this.$Notice.error({title:e.response.data.msg})
         })
       },
       changePage(page){
-        console.log(page)
         this.page = page
-        console.log(JSON.stringify(this.mockTableData2()))
-        this.tableData = this.mockTableData2()
+        this.mockTableData().then(data => {
+          this.tableData = data
+        })
       },
       changeSize(size){
         this.size = size
-        this.tableData = this.mockTableData2()
+        this.mockTableData().then(data => {
+          this.tableData = data
+        })
       },
       show (index) {
         this.modalOpt.index = index
