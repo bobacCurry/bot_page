@@ -1,6 +1,6 @@
 <template>
   <div class="user-info">
-    <div class="user-info-item"><b>{{user.userName}}</b> 欢迎登陆通达推广系统！</div>
+    <div class="user-info-item"><b>{{user.userName}}</b> 欢迎登陆TG机器人管理系统！</div>
   </div>
 </template>
 <script>

@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 import user from './module/user'
 import app from './module/app'
-import bot from './module/bot'
+import bot from './module/model'
 
 Vue.use(Vuex)
 

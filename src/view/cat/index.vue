@@ -3,13 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create bot</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">create cat</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
           <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
@@ -53,16 +47,15 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name (模糊匹配)</Option>
-              <Option value="username">username (模糊匹配)</Option>
-              <Option value="token">token (模糊匹配)</Option>
-              <Option value="type">type (模糊匹配)</Option>
-              <Option value="status">status (精准匹配)</Option>
+              <Option value="text">text (模糊匹配)</Option>
+              <Option value="tags">tags (模糊匹配)</Option>
+              <Option value="lang">lang (模糊匹配)</Option>
+              <Option value="sort">sort (精准匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
-      <Table ref="bot" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
+      <Table ref="cat" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
           <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
           <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
@@ -99,19 +92,16 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          username:true,
-          token:true,
-          type:true,
-          cburl:true,
-          status:true,
+          selection: true,
+          tags: true,
+          lang: true,
+          sort: true,
           created_at:true,
           updated_at:true,
           action:true
         },
         modalOpt: {
-          edit: true,
-          index: null,
+          index: 0,
           name: '',
           loading: false,
           flag: false,
@@ -119,12 +109,10 @@
         },
         formValidate: {},
         formCreateDate: {
-          name: '',
-          username: '',
-          token: '',
-          type: '',
-          cburl: '',
-          status: 0,
+          title: '',
+          tags: [],
+          lang: '',
+          sort: 0,
         }
       }
     },
@@ -146,24 +134,23 @@
     methods: {
       ...mapActions([
         'getList',
-        'changeStatus',
         'removeData'
       ]),
       async mockTableData() {
-        let model = 'bot',
+        let model = 'cat',
             data = [],
             page = this.page,
             size = this.size,
             conditions = this.search.conditions
         await this.getList({ model,page, size, conditions }).then(res => {
-          this.total = res.bot_count
-          data = res.bot_list
+          this.total = res.cat_count
+          data = res.cat_list
         }).catch((e)=>{
           this.$Notice.error({title:e.response.data.msg})
         })
         return Promise.resolve(data);
       },
-      getTableColumns() {
+      getTableColumns () {
         const tableColumnList = {
           selection: {
             type: 'selection',
@@ -171,51 +158,55 @@
             fixed: 'left',
             width: 60
           },
-          name: {
-            title: 'name',
-            key: 'name',
-            align: 'center',
-            fixed: 'left',
-            width: 120,
+          text: {
+            title: 'text',
+            key: 'text',
+            width: 150
           },
-          username: {
-            title: 'username',
-            key: 'username',
+          tags: {
+            title: 'tags',
+            key: 'tags',
             width: 150,
-          },
-          token: {
-            title: 'token',
-            key: 'token',
-            width: 150,
-          },
-          type: {
-            title: 'type',
-            key: 'type',
-            width: 150,
-            sortable: true
-          },
-          cburl: {
-            title: 'cburl',
-            key: 'cburl',
-            width: 150,
-            sortable: true
-          },
-          status: {
-            title: 'status',
-            key: 'status',
-            width: 150,
-            sortable: true,
-            render:(h, params) => {
-              const row = params.row
-              const color = row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'error'
-              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
-              return h('Tag', {
+            render: (h, params) => {
+              return h('Poptip', {
                 props: {
-                  type: 'dot',
-                  color: color
+                  wordWrap: true,
+                  trigger: 'hover',
+                  placement: 'bottom'
                 }
-              }, text)
+              }, [
+                h('Tag', params.row.tags.length + ' tags'),
+                h('div', {
+                  slot: 'content',
+                  style: {
+                    minWidth: '150px',
+                    maxWidth: '500px'
+                  }
+                }, this.tableData[params.index].tags.map(item => {
+                  return h('Tag', {
+                    props: {
+                      type: 'border',
+                      color: 'primary'
+                    },
+                    style: {
+                      margin: '3px 6px'
+                    }
+                  }, item)
+                }))
+              ]);
             }
+          },
+          lang: {
+            title: 'lang',
+            key: 'lang',
+            width: 150,
+            sortable: true
+          },
+          sort: {
+            title: 'sort',
+            key: 'sort',
+            width: 150,
+            sortable: true
           },
           created_at: {
             title: 'created_at',
@@ -238,10 +229,10 @@
         }
 
         let obj = this.tableColumnsChecked
-        let data = [tableColumnList.name]
+        let data = [tableColumnList.text]
 
-        Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key]){
+        Object.keys(obj).forEach(function (key) {
+          if (key=='selection' && obj[key]){
             data.splice(0,0,tableColumnList[key])
           }else if(obj[key]){
             data.push(tableColumnList[key])
@@ -292,37 +283,6 @@
           this.tableData = data
         })
       },
-      setStatus(status) {
-        let selection = this.$refs['bot'].getSelection()
-        if(!selection.length){
-          this.$Message.warning('未选择数据')
-          return
-        }
-
-        this.$Modal.confirm({
-          title: `将 status 修改 ${status==1?'Success':'Disable'}`,
-          onOk:()=>{
-            let selectionData = this.$refs['bot'].objData,
-                model = 'bot',
-                id_list = [],
-                index_list = []
-            Object.keys(selectionData).forEach((index) => {
-              if(selectionData[index]._isChecked){
-                id_list.push(selectionData[index]._id)
-                index_list.push(index)
-              }
-            })
-
-            this.changeStatus({ model, id_list, status }).then(res => {
-              index_list.forEach((index) => {
-                this.tableData[index].status = status
-              })
-            }).catch((e)=>{
-              this.$Notice.error({title:e.response.data.msg})
-            })
-          }
-        })
-      },
       changePage(page){
         this.page = page
         this.mockTableData().then(data => {
@@ -338,22 +298,22 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create bot'
+        this.modalOpt.name = 'create cat'
         this.modalOpt.flag = true
       },
       editShow(index) {
         this.modalOpt.edit = true
         this.modalOpt.index = index
         this.formValidate = this.tableData[index]
-        this.modalOpt.name = this.tableData[index].name
+        this.modalOpt.name = this.tableData[index].text
         this.modalOpt.flag = true
       },
       remove(index) {
         this.$Modal.confirm({
-          title: `删除 ${this.tableData[index].name}`,
+          title: `删除 ${this.tableData[index].text}`,
           onOk:()=>{
             let id = this.tableData[index]._id,
-                model = 'bot'
+                model = 'cat'
             this.removeData({ model, id }).then(res => {
               if (res.success){
                 this.tableData.splice(index,1)
@@ -419,6 +379,7 @@
     }
   }
   .table{
+    overflow: visible;
     .ivu-tag{
       cursor: default;
     }

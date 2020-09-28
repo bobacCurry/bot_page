@@ -3,13 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create bot</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">create chat</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
           <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
@@ -53,16 +47,20 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name (模糊匹配)</Option>
+              <Option value="title">title (模糊匹配)</Option>
+              <Option value="description">description (模糊匹配)</Option>
               <Option value="username">username (模糊匹配)</Option>
-              <Option value="token">token (模糊匹配)</Option>
               <Option value="type">type (模糊匹配)</Option>
-              <Option value="status">status (精准匹配)</Option>
+              <Option value="tags">tags (模糊匹配)</Option>
+              <Option value="member_count">member_count (精准匹配)</Option>
+              <Option value="lang">lang (模糊匹配)</Option>
+              <Option value="score">score (精准匹配)</Option>
+              <Option value="keywords">keywords (模糊匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
-      <Table ref="bot" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
+      <Table ref="chat" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
           <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
           <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
@@ -99,19 +97,22 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          username:true,
-          token:true,
-          type:true,
-          cburl:true,
-          status:true,
+          selection: true,
+          description: true,
+          username: true,
+          type: true,
+          tags: true,
+          member_count: true,
+          lang: true,
+          score: true,
+          keywords: true,
+          end_at: true,
           created_at:true,
           updated_at:true,
           action:true
         },
         modalOpt: {
-          edit: true,
-          index: null,
+          index: 0,
           name: '',
           loading: false,
           flag: false,
@@ -119,12 +120,15 @@
         },
         formValidate: {},
         formCreateDate: {
-          name: '',
+          title: '',
           username: '',
-          token: '',
           type: '',
-          cburl: '',
-          status: 0,
+          tags: [],
+          member_count: 0,
+          lang: '',
+          score: 0,
+          keywords: [],
+          end_at: new Date().getTime(),
         }
       }
     },
@@ -146,24 +150,23 @@
     methods: {
       ...mapActions([
         'getList',
-        'changeStatus',
         'removeData'
       ]),
       async mockTableData() {
-        let model = 'bot',
+        let model = 'chat',
             data = [],
             page = this.page,
             size = this.size,
             conditions = this.search.conditions
         await this.getList({ model,page, size, conditions }).then(res => {
-          this.total = res.bot_count
-          data = res.bot_list
+          this.total = res.chat_count
+          data = res.chat_list
         }).catch((e)=>{
           this.$Notice.error({title:e.response.data.msg})
         })
         return Promise.resolve(data);
       },
-      getTableColumns() {
+      getTableColumns () {
         const tableColumnList = {
           selection: {
             type: 'selection',
@@ -171,22 +174,22 @@
             fixed: 'left',
             width: 60
           },
-          name: {
-            title: 'name',
-            key: 'name',
+          title: {
+            title: 'title',
+            key: 'title',
             align: 'center',
             fixed: 'left',
-            width: 120,
+            width: 120
+          },
+          description: {
+            title: 'description',
+            key: 'description',
+            width: 150
           },
           username: {
             title: 'username',
             key: 'username',
-            width: 150,
-          },
-          token: {
-            title: 'token',
-            key: 'token',
-            width: 150,
+            width: 150
           },
           type: {
             title: 'type',
@@ -194,28 +197,95 @@
             width: 150,
             sortable: true
           },
-          cburl: {
-            title: 'cburl',
-            key: 'cburl',
+          tags: {
+            title: 'tags',
+            key: 'tags',
+            width: 150,
+            render: (h, params) => {
+              return h('Poptip', {
+                props: {
+                  wordWrap: true,
+                  trigger: 'hover',
+                  placement: 'bottom'
+                }
+              }, [
+                h('Tag', params.row.tags.length + ' tags'),
+                h('div', {
+                  slot: 'content',
+                  style: {
+                    minWidth: '150px',
+                    maxWidth: '500px'
+                  }
+                }, this.tableData[params.index].tags.map(item => {
+                  return h('Tag', {
+                    props: {
+                      type: 'border',
+                      color: 'primary'
+                    },
+                    style: {
+                      margin: '3px 6px'
+                    }
+                  }, item)
+                }))
+              ]);
+            }
+          },
+          member_count: {
+            title: 'member_count',
+            key: 'member_count',
             width: 150,
             sortable: true
           },
-          status: {
-            title: 'status',
-            key: 'status',
+          lang: {
+            title: 'lang',
+            key: 'lang',
             width: 150,
-            sortable: true,
-            render:(h, params) => {
-              const row = params.row
-              const color = row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'error'
-              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
-              return h('Tag', {
+            sortable: true
+          },
+          score: {
+            title: 'score',
+            key: 'score',
+            width: 150,
+            sortable: true
+          },
+          keywords: {
+            title: 'keywords',
+            key: 'keywords',
+            width: 150,
+            render: (h, params) => {
+              return h('Poptip', {
                 props: {
-                  type: 'dot',
-                  color: color
+                  wordWrap: true,
+                  trigger: 'hover',
+                  placement: 'bottom'
                 }
-              }, text)
+              }, [
+                h('Tag', params.row.keywords.length + ' keywords'),
+                h('div', {
+                  slot: 'content',
+                  style: {
+                    minWidth: '150px',
+                    maxWidth: '500px'
+                  }
+                }, this.tableData[params.index].keywords.map(item => {
+                  return h('Tag', {
+                    props: {
+                      type: 'border',
+                      color: 'primary'
+                    },
+                    style: {
+                      margin: '3px 6px'
+                    }
+                  }, item)
+                }))
+              ]);
             }
+          },
+          end_at: {
+            title: 'end_at',
+            key: 'end_at',
+            width: 150,
+            sortable: true
           },
           created_at: {
             title: 'created_at',
@@ -238,10 +308,10 @@
         }
 
         let obj = this.tableColumnsChecked
-        let data = [tableColumnList.name]
+        let data = [tableColumnList.title]
 
-        Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key]){
+        Object.keys(obj).forEach(function (key) {
+          if (key=='selection' && obj[key]){
             data.splice(0,0,tableColumnList[key])
           }else if(obj[key]){
             data.push(tableColumnList[key])
@@ -292,37 +362,6 @@
           this.tableData = data
         })
       },
-      setStatus(status) {
-        let selection = this.$refs['bot'].getSelection()
-        if(!selection.length){
-          this.$Message.warning('未选择数据')
-          return
-        }
-
-        this.$Modal.confirm({
-          title: `将 status 修改 ${status==1?'Success':'Disable'}`,
-          onOk:()=>{
-            let selectionData = this.$refs['bot'].objData,
-                model = 'bot',
-                id_list = [],
-                index_list = []
-            Object.keys(selectionData).forEach((index) => {
-              if(selectionData[index]._isChecked){
-                id_list.push(selectionData[index]._id)
-                index_list.push(index)
-              }
-            })
-
-            this.changeStatus({ model, id_list, status }).then(res => {
-              index_list.forEach((index) => {
-                this.tableData[index].status = status
-              })
-            }).catch((e)=>{
-              this.$Notice.error({title:e.response.data.msg})
-            })
-          }
-        })
-      },
       changePage(page){
         this.page = page
         this.mockTableData().then(data => {
@@ -338,22 +377,22 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create bot'
+        this.modalOpt.name = 'create chat'
         this.modalOpt.flag = true
       },
       editShow(index) {
         this.modalOpt.edit = true
         this.modalOpt.index = index
         this.formValidate = this.tableData[index]
-        this.modalOpt.name = this.tableData[index].name
+        this.modalOpt.name = this.tableData[index].title
         this.modalOpt.flag = true
       },
       remove(index) {
         this.$Modal.confirm({
-          title: `删除 ${this.tableData[index].name}`,
+          title: `删除 ${this.tableData[index].title}`,
           onOk:()=>{
             let id = this.tableData[index]._id,
-                model = 'bot'
+                model = 'chat'
             this.removeData({ model, id }).then(res => {
               if (res.success){
                 this.tableData.splice(index,1)
@@ -419,6 +458,7 @@
     }
   }
   .table{
+    overflow: visible;
     .ivu-tag{
       cursor: default;
     }

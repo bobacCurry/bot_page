@@ -3,13 +3,13 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create bot</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">create ads</Button></Card>
         </Col>
         <Col>
-          <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
+          <Card class="option-card"><Button type="success" @click="setStatus(true)">Success</Button></Card>
         </Col>
         <Col>
-          <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
+          <Card class="option-card"><Button type="warning" @click="setStatus(false)">Disable</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
           <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
@@ -53,16 +53,15 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name (模糊匹配)</Option>
-              <Option value="username">username (模糊匹配)</Option>
-              <Option value="token">token (模糊匹配)</Option>
-              <Option value="type">type (模糊匹配)</Option>
+              <Option value="text">text (模糊匹配)</Option>
+              <Option value="link">link (模糊匹配)</Option>
+              <Option value="count">count (精准匹配)</Option>
               <Option value="status">status (精准匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
-      <Table ref="bot" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
+      <Table ref="ads" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
           <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
           <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
@@ -100,11 +99,11 @@
         tableColumns: [],
         tableColumnsChecked: {
           selection:true,
-          username:true,
-          token:true,
-          type:true,
-          cburl:true,
+          link:true,
+          count:true,
           status:true,
+          last_show:true,
+          end_at:true,
           created_at:true,
           updated_at:true,
           action:true
@@ -119,12 +118,12 @@
         },
         formValidate: {},
         formCreateDate: {
-          name: '',
-          username: '',
-          token: '',
-          type: '',
-          cburl: '',
-          status: 0,
+          text: '',
+          link: '',
+          count: 0,
+          status: false,
+          last_show: new Date().getTime(),
+          end_at: new Date().getTime(),
         }
       }
     },
@@ -150,14 +149,14 @@
         'removeData'
       ]),
       async mockTableData() {
-        let model = 'bot',
+        let model = 'ads',
             data = [],
             page = this.page,
             size = this.size,
             conditions = this.search.conditions
         await this.getList({ model,page, size, conditions }).then(res => {
-          this.total = res.bot_count
-          data = res.bot_list
+          this.total = res.ads_count
+          data = res.ads_list
         }).catch((e)=>{
           this.$Notice.error({title:e.response.data.msg})
         })
@@ -171,34 +170,23 @@
             fixed: 'left',
             width: 60
           },
-          name: {
-            title: 'name',
-            key: 'name',
+          text: {
+            title: 'text',
+            key: 'text',
             align: 'center',
             fixed: 'left',
             width: 120,
           },
-          username: {
-            title: 'username',
-            key: 'username',
-            width: 150,
+          link: {
+            title: 'link',
+            key: 'link',
+            width: 200,
           },
-          token: {
-            title: 'token',
-            key: 'token',
+          count: {
+            title: 'count',
+            key: 'count',
             width: 150,
-          },
-          type: {
-            title: 'type',
-            key: 'type',
-            width: 150,
-            sortable: true
-          },
-          cburl: {
-            title: 'cburl',
-            key: 'cburl',
-            width: 150,
-            sortable: true
+            sortable: true,
           },
           status: {
             title: 'status',
@@ -207,8 +195,8 @@
             sortable: true,
             render:(h, params) => {
               const row = params.row
-              const color = row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'error'
-              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
+              const color = row.status === false ? 'warning' : row.status === true ? 'success' : 'error'
+              const text = row.status === false ? 'Disable' : row.status === true ? 'Success' : 'Fail'
               return h('Tag', {
                 props: {
                   type: 'dot',
@@ -216,6 +204,18 @@
                 }
               }, text)
             }
+          },
+          last_show: {
+            title: 'last_show',
+            key: 'last_show',
+            width: 150,
+            sortable: true
+          },
+          end_at: {
+            title: 'end_at',
+            key: 'end_at',
+            width: 150,
+            sortable: true
           },
           created_at: {
             title: 'created_at',
@@ -238,7 +238,7 @@
         }
 
         let obj = this.tableColumnsChecked
-        let data = [tableColumnList.name]
+        let data = [tableColumnList.text]
 
         Object.keys(obj).forEach(function(key) {
           if(key=='selection' && obj[key]){
@@ -293,17 +293,17 @@
         })
       },
       setStatus(status) {
-        let selection = this.$refs['bot'].getSelection()
+        let selection = this.$refs['ads'].getSelection()
         if(!selection.length){
           this.$Message.warning('未选择数据')
           return
         }
 
         this.$Modal.confirm({
-          title: `将 status 修改 ${status==1?'Success':'Disable'}`,
+          title: `将 status 修改 ${status==true?'Success':'Disable'}`,
           onOk:()=>{
-            let selectionData = this.$refs['bot'].objData,
-                model = 'bot',
+            let selectionData = this.$refs['ads'].objData,
+                model = 'ads',
                 id_list = [],
                 index_list = []
             Object.keys(selectionData).forEach((index) => {
@@ -338,22 +338,22 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create bot'
+        this.modalOpt.name = 'create ads'
         this.modalOpt.flag = true
       },
       editShow(index) {
         this.modalOpt.edit = true
         this.modalOpt.index = index
         this.formValidate = this.tableData[index]
-        this.modalOpt.name = this.tableData[index].name
+        this.modalOpt.name = this.tableData[index].text
         this.modalOpt.flag = true
       },
       remove(index) {
         this.$Modal.confirm({
-          title: `删除 ${this.tableData[index].name}`,
+          title: `删除 ${this.tableData[index].text}`,
           onOk:()=>{
             let id = this.tableData[index]._id,
-                model = 'bot'
+                model = 'ads'
             this.removeData({ model, id }).then(res => {
               if (res.success){
                 this.tableData.splice(index,1)

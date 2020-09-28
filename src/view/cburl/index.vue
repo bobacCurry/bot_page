@@ -3,7 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create bot</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">create cburl</Button></Card>
         </Col>
         <Col>
           <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
@@ -53,16 +53,14 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name (模糊匹配)</Option>
-              <Option value="username">username (模糊匹配)</Option>
-              <Option value="token">token (模糊匹配)</Option>
-              <Option value="type">type (模糊匹配)</Option>
-              <Option value="status">status (精准匹配)</Option>
+              <Option value="name">name</Option>
+              <Option value="memo">memo</Option>
+              <Option value="status">status</Option>
             </Select>
           </Input>
         </Col>
       </Row>
-      <Table ref="bot" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
+      <Table ref="cburl" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
           <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
           <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
@@ -100,10 +98,7 @@
         tableColumns: [],
         tableColumnsChecked: {
           selection:true,
-          username:true,
-          token:true,
-          type:true,
-          cburl:true,
+          memo:true,
           status:true,
           created_at:true,
           updated_at:true,
@@ -120,11 +115,8 @@
         formValidate: {},
         formCreateDate: {
           name: '',
-          username: '',
-          token: '',
-          type: '',
-          cburl: '',
-          status: 0,
+          memo: '',
+          status: 1,
         }
       }
     },
@@ -150,14 +142,14 @@
         'removeData'
       ]),
       async mockTableData() {
-        let model = 'bot',
+        let model = 'cburl',
             data = [],
             page = this.page,
             size = this.size,
             conditions = this.search.conditions
         await this.getList({ model,page, size, conditions }).then(res => {
-          this.total = res.bot_count
-          data = res.bot_list
+          this.total = res.cburl_count
+          data = res.cburl_list
         }).catch((e)=>{
           this.$Notice.error({title:e.response.data.msg})
         })
@@ -178,27 +170,15 @@
             fixed: 'left',
             width: 120,
           },
-          username: {
-            title: 'username',
-            key: 'username',
+          memo: {
+            title: 'memo',
+            key: 'memo',
             width: 150,
           },
           token: {
             title: 'token',
             key: 'token',
             width: 150,
-          },
-          type: {
-            title: 'type',
-            key: 'type',
-            width: 150,
-            sortable: true
-          },
-          cburl: {
-            title: 'cburl',
-            key: 'cburl',
-            width: 150,
-            sortable: true
           },
           status: {
             title: 'status',
@@ -293,7 +273,7 @@
         })
       },
       setStatus(status) {
-        let selection = this.$refs['bot'].getSelection()
+        let selection = this.$refs['cburl'].getSelection()
         if(!selection.length){
           this.$Message.warning('未选择数据')
           return
@@ -302,8 +282,8 @@
         this.$Modal.confirm({
           title: `将 status 修改 ${status==1?'Success':'Disable'}`,
           onOk:()=>{
-            let selectionData = this.$refs['bot'].objData,
-                model = 'bot',
+            let selectionData = this.$refs['cburl'].objData,
+                model = 'cburl',
                 id_list = [],
                 index_list = []
             Object.keys(selectionData).forEach((index) => {
@@ -338,7 +318,7 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create bot'
+        this.modalOpt.name = 'create cburl'
         this.modalOpt.flag = true
       },
       editShow(index) {
@@ -353,7 +333,7 @@
           title: `删除 ${this.tableData[index].name}`,
           onOk:()=>{
             let id = this.tableData[index]._id,
-                model = 'bot'
+                model = 'cburl'
             this.removeData({ model, id }).then(res => {
               if (res.success){
                 this.tableData.splice(index,1)

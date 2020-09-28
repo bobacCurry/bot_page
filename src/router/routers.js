@@ -59,25 +59,6 @@ export default [
     ]
   },
   {
-    path: '/template',
-    name: 'template',
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
-      {
-        path: 'template_page',
-        name: 'template_page',
-        meta: {
-          //icon: 'md-planet',
-          title: '模板'
-        },
-        component: () => import('@/view/template/index.vue')
-      }
-    ]
-  },
-  {
     path: '/bot',
     name: 'bot',
     meta: {
@@ -89,10 +70,48 @@ export default [
         path: 'bot_page',
         name: 'bot_page',
         meta: {
-          //icon: 'md-planet',
-          title: '🤖 机器人'
+          icon: ' iconfont iconbot',
+          title: 'bot'
         },
         component: () => import('@/view/bot/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/cburl',
+    name: 'cburl',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'cburl_page',
+        name: 'cburl_page',
+        meta: {
+          icon: ' iconfont iconcburl',
+          title: 'cburl'
+        },
+        component: () => import('@/view/cburl/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'chat_page',
+        name: 'chat_page',
+        meta: {
+          icon: ' iconfont iconchat',
+          title: 'chat'
+        },
+        component: () => import('@/view/chat/index.vue')
       }
     ]
   },
@@ -108,13 +127,92 @@ export default [
         path: 'cat_page',
         name: 'cat_page',
         meta: {
-          //icon: 'md-planet',
-          title: '📒 分类'
+          icon: ' iconfont iconcat',
+          title: 'cat'
+        },
+        component: () => import('@/view/cat/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/menu',
+    name: 'menu',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'menu_page',
+        name: 'menu_page',
+        meta: {
+          icon: ' iconfont iconmenu',
+          title: 'menu'
+        },
+        component: () => import('@/view/menu/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/ads',
+    name: 'ads',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'ads_page',
+        name: 'ads_page',
+        meta: {
+          icon: ' iconfont iconads',
+          title: 'ads'
+        },
+        component: () => import('@/view/ads/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/order',
+    name: 'order',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'order_page',
+        name: 'order_page',
+        meta: {
+          icon: ' iconfont iconorder',
+          title: 'order'
+        },
+        component: () => import('@/view/order/index.vue')
+      }
+    ]
+  },
+/*
+  {
+    path: '/user',
+    name: 'user',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'user_page',
+        name: 'user_page',
+        meta: {
+          icon: ' iconfont iconuser',
+          title: 'user'
         },
         component: () => import('@/view/bot/index.vue')
       }
     ]
   },
+*/
+/*
   {
     path: '/multilevel',
     name: 'multilevel',
@@ -175,6 +273,15 @@ export default [
     },
     component: Main,
     children: [
+      {
+        path: 'template',
+        name: 'template',
+        meta: {
+          icon: 'md-planet',
+          title: '模板'
+        },
+        component: () => import('@/view/template/index.vue')
+      },
       {
         path: 'tree_table_page',
         name: 'tree_table_page',
@@ -240,6 +347,7 @@ export default [
       }
     ]
   },
+*/
   {
     path: '/401',
     name: 'error_401',

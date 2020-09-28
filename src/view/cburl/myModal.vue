@@ -11,17 +11,8 @@
         <FormItem label="name" prop="name">
           <Input v-model="formValidate.name" placeholder="Enter your name"></Input>
         </FormItem>
-        <FormItem label="username" prop="username">
-          <Input v-model="formValidate.username" placeholder="Enter your username"></Input>
-        </FormItem>
-        <FormItem label="token" prop="token">
-          <Input v-model="formValidate.token" placeholder="Enter your token"></Input>
-        </FormItem>
-        <FormItem label="type" prop="type">
-          <Input v-model="formValidate.type" placeholder="Enter your type"></Input>
-        </FormItem>
-        <FormItem label="cburl" prop="cburl">
-          <Input v-model="formValidate.cburl" placeholder="Enter your cburl"></Input>
+        <FormItem label="memo" prop="memo">
+          <Input v-model="formValidate.memo" placeholder="Enter your memo"></Input>
         </FormItem>
         <FormItem label="status" prop="status">
           <RadioGroup v-model="formValidate.status">
@@ -50,17 +41,8 @@
           name: [
             { required: true, message: 'The name cannot be empty', trigger: 'blur' }
           ],
-          username: [
-            { required: true, message: 'The username cannot be empty', trigger: 'blur' }
-          ],
-          token: [
-            { required: true, message: 'The token cannot be empty', trigger: 'blur' }
-          ],
-          type: [
-            { required: true, message: 'The type cannot be empty', trigger: 'blur' }
-          ],
-          cburl: [
-            { required: true, message: 'The cburl cannot be empty', trigger: 'blur' }
+          memo: [
+            { required: true, message: 'The memo cannot be empty', trigger: 'blur' }
           ],
           status: [
             { required: true, type: 'number', message: 'Please select the status', trigger: 'change' }
@@ -77,7 +59,7 @@
         this.modalOpt.loading = true
         this.$refs[name].validate((valid) => {
           if (valid) {
-            let model = 'bot'
+            let model = 'cburl'
             let data = this.formValidate
             this.createData({ model, data }).then(res => {
               if(res.success){
@@ -100,7 +82,7 @@
         this.modalOpt.loading = true
         this.$refs[name].validate((valid) => {
           if (valid) {
-            let model = 'bot'
+            let model = 'cburl'
             let data = this.formValidate
             this.editData({ model, data }).then(res => {
               if(res.success){

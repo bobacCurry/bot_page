@@ -35,11 +35,16 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          username:true,
-          token:true,
-          type:true,
-          status:true,
+          selection: true,
+          description: true,
+          username: true,
+          type: true,
+          tags: true,
+          member_count: true,
+          lang: true,
+          score: true,
+          keywords: true,
+          end_at: true,
           created_at:true,
           updated_at:true,
           action:true
@@ -85,15 +90,19 @@
         let num = (this.total-(this.page*this.size))>=0?this.size:(this.total-((this.page-1)*this.size))
         for (let i = 0; i < num; i++) {
           data.push({
-            name: `Name ${this.page} ` + (i+1),
-            username: getNum(),
-            token: getNum(),
-            type: getNum(),
-            status: 0,
-            created_at: getNum(),
-            updated_at: getNum()
+            title: `title ${getNum() + '' + this.page}` + (i+1),
+            description: `description ${getNum() + '' + this.page}` + (i+1),
+            username: `username ${getNum() + '' + this.page}` + (i+1),
+            type: `supergroup`,
+            tags: [`tags ${getNum()}`, `tags ${getNum()}`, `tags ${getNum()}`],
+            member_count: getNum()+getNum(),
+            lang: `cn`,
+            score: getNum(),
+            keywords: [`keywords ${getNum()}`, `keywords ${getNum()}`, `keywords ${getNum()}`],
+            end_at: getNum()+getNum()+getNum()
           })
         }
+        console.log(JSON.stringify(data))
         return data
       },
       getTable2Columns () {
@@ -104,23 +113,23 @@
             fixed: 'left',
             width: 60
           },
-          name: {
-            title: 'name',
-            key: 'name',
+          title: {
+            title: 'title',
+            key: 'title',
             align: 'center',
             fixed: 'left',
             width: 120,
             sortable: true
           },
-          username: {
-            title: 'username',
-            key: 'username',
+          description: {
+            title: 'description',
+            key: 'description',
             width: 150,
             sortable: true
           },
-          token: {
-            title: 'token',
-            key: 'token',
+          username: {
+            title: 'username',
+            key: 'username',
             width: 150,
             sortable: true
           },
@@ -130,21 +139,41 @@
             width: 150,
             sortable: true
           },
-          status: {
-            title: 'status',
-            key: 'status',
+          tags: {
+            title: 'tags',
+            key: 'tags',
             width: 150,
-            render: (h, params) => {
-              const row = params.row
-              const color = row.status === 0 ? 'primary' : row.status === 1 ? 'success' : 'error'
-              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
-              return h('Tag', {
-                props: {
-                  type: 'dot',
-                  color: color
-                }
-              }, text)
-            }
+            sortable: true
+          },
+          member_count: {
+            title: 'member_count',
+            key: 'member_count',
+            width: 150,
+            sortable: true
+          },
+          lang: {
+            title: 'lang',
+            key: 'lang',
+            width: 150,
+            sortable: true
+          },
+          score: {
+            title: 'score',
+            key: 'score',
+            width: 150,
+            sortable: true
+          },
+          keywords: {
+            title: 'keywords',
+            key: 'keywords',
+            width: 150,
+            sortable: true
+          },
+          end_at: {
+            title: 'end_at',
+            key: 'end_at',
+            width: 150,
+            sortable: true
           },
           created_at: {
             title: 'created_at',
@@ -167,7 +196,7 @@
         }
 
         let obj = this.tableColumnsChecked
-        let data = [table2ColumnList.name]
+        let data = [table2ColumnList.title]
 
         Object.keys(obj).forEach(function (key) {
           if (key=='selection' && obj[key]){

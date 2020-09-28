@@ -3,7 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create bot</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">create menu</Button></Card>
         </Col>
         <Col>
           <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
@@ -19,6 +19,7 @@
         </Col>
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
+<!--
         <Col span="7" class="search-date-box">
           <DatePicker
                   size="large"
@@ -34,6 +35,7 @@
                   v-model="search.date">
           </DatePicker>
         </Col>
+-->
         <Col span="9" class="search-input-box">
           <Input
                   size="large"
@@ -53,16 +55,17 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name (模糊匹配)</Option>
-              <Option value="username">username (模糊匹配)</Option>
-              <Option value="token">token (模糊匹配)</Option>
-              <Option value="type">type (模糊匹配)</Option>
+              <Option value="text">text (模糊匹配)</Option>
+              <Option value="path">path (模糊匹配)</Option>
+              <Option value="sort">sort (精准匹配)</Option>
+              <Option value="width">width (精准匹配)</Option>
+              <Option value="level">level (精准匹配)</Option>
               <Option value="status">status (精准匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
-      <Table ref="bot" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
+      <Table ref="menu" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
           <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
           <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
@@ -99,19 +102,16 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          username:true,
-          token:true,
-          type:true,
-          cburl:true,
-          status:true,
-          created_at:true,
-          updated_at:true,
+          selection: true,
+          path: true,
+          sort: true,
+          width: true,
+          level: true,
+          status: true,
           action:true
         },
         modalOpt: {
-          edit: true,
-          index: null,
+          index: 0,
           name: '',
           loading: false,
           flag: false,
@@ -119,12 +119,12 @@
         },
         formValidate: {},
         formCreateDate: {
-          name: '',
-          username: '',
-          token: '',
-          type: '',
-          cburl: '',
-          status: 0,
+          text: {cn:''},
+          path: '',
+          sort: 0,
+          width: 0,
+          level: 0,
+          status: 0
         }
       }
     },
@@ -150,20 +150,20 @@
         'removeData'
       ]),
       async mockTableData() {
-        let model = 'bot',
+        let model = 'menu',
             data = [],
             page = this.page,
             size = this.size,
             conditions = this.search.conditions
         await this.getList({ model,page, size, conditions }).then(res => {
-          this.total = res.bot_count
-          data = res.bot_list
+          this.total = res.menu_count
+          data = res.menu_list
         }).catch((e)=>{
           this.$Notice.error({title:e.response.data.msg})
         })
         return Promise.resolve(data);
       },
-      getTableColumns() {
+      getTableColumns () {
         const tableColumnList = {
           selection: {
             type: 'selection',
@@ -171,32 +171,35 @@
             fixed: 'left',
             width: 60
           },
-          name: {
-            title: 'name',
-            key: 'name',
-            align: 'center',
-            fixed: 'left',
-            width: 120,
-          },
-          username: {
-            title: 'username',
-            key: 'username',
+          text: {
+            title: 'text',
+            key: 'text',
             width: 150,
+            render: (h, params) => {
+              const row = params.row
+              return h('span',{}, row.text.cn);
+            }
           },
-          token: {
-            title: 'token',
-            key: 'token',
-            width: 150,
+          path: {
+            title: 'path',
+            key: 'path',
+            width: 150
           },
-          type: {
-            title: 'type',
-            key: 'type',
+          sort: {
+            title: 'sort',
+            key: 'sort',
             width: 150,
             sortable: true
           },
-          cburl: {
-            title: 'cburl',
-            key: 'cburl',
+          width: {
+            title: 'width',
+            key: 'width',
+            width: 150,
+            sortable: true
+          },
+          level: {
+            title: 'level',
+            key: 'level',
             width: 150,
             sortable: true
           },
@@ -217,18 +220,6 @@
               }, text)
             }
           },
-          created_at: {
-            title: 'created_at',
-            key: 'created_at',
-            width: 150,
-            sortable: true
-          },
-          updated_at: {
-            title: 'updated_at',
-            key: 'updated_at',
-            width: 150,
-            sortable: true
-          },
           action: {
             title: 'Action',
             slot: 'action',
@@ -238,10 +229,10 @@
         }
 
         let obj = this.tableColumnsChecked
-        let data = [tableColumnList.name]
+        let data = [tableColumnList.text]
 
-        Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key]){
+        Object.keys(obj).forEach(function (key) {
+          if (key=='selection' && obj[key]){
             data.splice(0,0,tableColumnList[key])
           }else if(obj[key]){
             data.push(tableColumnList[key])
@@ -293,7 +284,7 @@
         })
       },
       setStatus(status) {
-        let selection = this.$refs['bot'].getSelection()
+        let selection = this.$refs['menu'].getSelection()
         if(!selection.length){
           this.$Message.warning('未选择数据')
           return
@@ -302,10 +293,10 @@
         this.$Modal.confirm({
           title: `将 status 修改 ${status==1?'Success':'Disable'}`,
           onOk:()=>{
-            let selectionData = this.$refs['bot'].objData,
-                model = 'bot',
-                id_list = [],
-                index_list = []
+            let selectionData = this.$refs['menu'].objData,
+                    model = 'menu',
+                    id_list = [],
+                    index_list = []
             Object.keys(selectionData).forEach((index) => {
               if(selectionData[index]._isChecked){
                 id_list.push(selectionData[index]._id)
@@ -338,22 +329,22 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create bot'
+        this.modalOpt.name = 'create menu'
         this.modalOpt.flag = true
       },
       editShow(index) {
         this.modalOpt.edit = true
         this.modalOpt.index = index
         this.formValidate = this.tableData[index]
-        this.modalOpt.name = this.tableData[index].name
+        this.modalOpt.name = this.tableData[index].text.cn
         this.modalOpt.flag = true
       },
       remove(index) {
         this.$Modal.confirm({
-          title: `删除 ${this.tableData[index].name}`,
+          title: `删除 ${this.tableData[index].text.cn}`,
           onOk:()=>{
             let id = this.tableData[index]._id,
-                model = 'bot'
+                model = 'menu'
             this.removeData({ model, id }).then(res => {
               if (res.success){
                 this.tableData.splice(index,1)
@@ -419,6 +410,7 @@
     }
   }
   .table{
+    overflow: visible;
     .ivu-tag{
       cursor: default;
     }
