@@ -3,7 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create ads</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">添加广告</Button></Card>
         </Col>
         <Col>
           <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
@@ -365,7 +365,7 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create ads'
+        this.modalOpt.name = '添加广告'
         this.modalOpt.flag = true
       },
       editShow(index) {

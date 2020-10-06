@@ -3,7 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">创建机器人</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">添加机器人</Button></Card>
         </Col>
         <Col>
           <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
@@ -14,9 +14,9 @@
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
           <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
-        <Col>
+<!--        <Col>
           <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
-        </Col>
+        </Col>-->
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
         <Col span="7" class="search-date-box">
@@ -85,7 +85,7 @@
     data() {
       return {
         search: {
-          flag: true,
+          flag: false,
           date: [ "", "" ],
           type: '',
           keywords: '',
@@ -365,7 +365,7 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create bot'
+        this.modalOpt.name = '添加机器人'
         this.modalOpt.flag = true
       },
       editShow(index) {

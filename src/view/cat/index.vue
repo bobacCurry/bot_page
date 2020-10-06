@@ -3,7 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create cat</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">添加分类</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
           <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
@@ -320,7 +320,7 @@
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create cat'
+        this.modalOpt.name = '添加分类'
         this.modalOpt.flag = true
       },
       editShow(index) {
