@@ -6,10 +6,10 @@
           <Card class="option-card"><Button type="info" @click="createShow()">create chat</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
-          <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
+          <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
         <Col>
-          <Card size="small" class="option-card">search <i-switch v-model="search.flag"></i-switch></Card>
+          <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
         </Col>
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
@@ -21,7 +21,7 @@
                   :confirm="false"
                   type="datetimerange"
                   placement="bottom-end"
-                  placeholder="Select date"
+                  placeholder="选择日期"
                   style="width: 330px"
                   @on-ok="dateChange(true)"
                   @on-clear="dateChange(false)"
@@ -35,7 +35,7 @@
                   clearable
                   search
                   enter-button="search"
-                  placeholder="Please enter keywords"
+                  placeholder="请输入关键字"
                   v-model="search.keywords"
                   @on-keyup="(search.keywords = search.keywords.trim())"
                   @on-search="searchKeywords(true)"
@@ -47,23 +47,22 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="title">title (模糊匹配)</Option>
-              <Option value="description">description (模糊匹配)</Option>
+              <Option value="title">名称 (模糊匹配)</Option>
+              <Option value="description">描述 (模糊匹配)</Option>
               <Option value="username">username (模糊匹配)</Option>
-              <Option value="type">type (模糊匹配)</Option>
-              <Option value="tags">tags (模糊匹配)</Option>
-              <Option value="member_count">member_count (精准匹配)</Option>
-              <Option value="lang">lang (模糊匹配)</Option>
-              <Option value="score">score (精准匹配)</Option>
-              <Option value="keywords">keywords (模糊匹配)</Option>
+              <Option value="type">类型 (模糊匹配)</Option>
+              <Option value="member_count">成员数 (精准匹配)</Option>
+              <Option value="lang">语言 (模糊匹配)</Option>
+              <Option value="score">权重 (精准匹配)</Option>
+              <Option value="keywords">关键词 (模糊匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
       <Table ref="chat" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
-          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
+          <Button type="primary" size="small" @click="editShow(index)">编辑</Button>
+          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">删除</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">
@@ -97,19 +96,54 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection: true,
-          description: true,
-          username: true,
-          type: true,
-          tags: true,
-          member_count: true,
-          lang: true,
-          score: true,
-          keywords: true,
-          end_at: true,
-          created_at:true,
-          updated_at:true,
-          action:true
+          selection: {
+            title:'名称',
+            status:true,
+          },
+          description: {
+            title:'描述',
+            status:true,
+          },
+          username: {
+            title:'username',
+            status:true,
+          },
+          type: {
+            title:'类型',
+            status:true,
+          },
+          member_count: {
+            title:'成员数',
+            status:true,
+          },
+          lang: {
+            title:'语言',
+            status:true,
+          },
+          score: {
+            title:'权重',
+            status:true,
+          },
+          keywords: {
+            title:'关键词',
+            status:true,
+          },
+          end_at: {
+            title:'结束时间',
+            status:true,
+          },
+          created_at:{
+            title:'创建时间',
+            status:true,
+          },
+          updated_at:{
+            title:'更新时间',
+            status:true,
+          },
+          action:{
+            title:'操作',
+            status:true,
+          }
         },
         modalOpt: {
           index: 0,
@@ -123,7 +157,6 @@
           title: '',
           username: '',
           type: '',
-          tags: [],
           member_count: 0,
           lang: '',
           score: 0,
@@ -175,14 +208,14 @@
             width: 60
           },
           title: {
-            title: 'title',
+            title: '名称',
             key: 'title',
             align: 'center',
             fixed: 'left',
             width: 120
           },
           description: {
-            title: 'description',
+            title: '描述',
             key: 'description',
             width: 150
           },
@@ -192,64 +225,31 @@
             width: 150
           },
           type: {
-            title: 'type',
+            title: '类型',
             key: 'type',
             width: 150,
             sortable: true
           },
-          tags: {
-            title: 'tags',
-            key: 'tags',
-            width: 150,
-            render: (h, params) => {
-              return h('Poptip', {
-                props: {
-                  wordWrap: true,
-                  trigger: 'hover',
-                  placement: 'bottom'
-                }
-              }, [
-                h('Tag', params.row.tags.length + ' tags'),
-                h('div', {
-                  slot: 'content',
-                  style: {
-                    minWidth: '150px',
-                    maxWidth: '500px'
-                  }
-                }, this.tableData[params.index].tags.map(item => {
-                  return h('Tag', {
-                    props: {
-                      type: 'border',
-                      color: 'primary'
-                    },
-                    style: {
-                      margin: '3px 6px'
-                    }
-                  }, item)
-                }))
-              ]);
-            }
-          },
           member_count: {
-            title: 'member_count',
+            title: '成员数',
             key: 'member_count',
             width: 150,
             sortable: true
           },
           lang: {
-            title: 'lang',
+            title: '语言',
             key: 'lang',
             width: 150,
             sortable: true
           },
           score: {
-            title: 'score',
+            title: '权重',
             key: 'score',
             width: 150,
             sortable: true
           },
           keywords: {
-            title: 'keywords',
+            title: '关键词',
             key: 'keywords',
             width: 150,
             render: (h, params) => {
@@ -282,25 +282,25 @@
             }
           },
           end_at: {
-            title: 'end_at',
+            title: '结束时间',
             key: 'end_at',
             width: 150,
             sortable: true
           },
           created_at: {
-            title: 'created_at',
+            title: '创建时间',
             key: 'created_at',
             width: 150,
             sortable: true
           },
           updated_at: {
-            title: 'updated_at',
+            title: '更新时间',
             key: 'updated_at',
             width: 150,
             sortable: true
           },
           action: {
-            title: 'Action',
+            title: '操作',
             slot: 'action',
             width: 150,
             align: 'center'
@@ -311,9 +311,9 @@
         let data = [tableColumnList.title]
 
         Object.keys(obj).forEach(function (key) {
-          if (key=='selection' && obj[key]){
+          if (key=='selection' && obj[key].status){
             data.splice(0,0,tableColumnList[key])
-          }else if(obj[key]){
+          }else if(obj[key].status){
             data.push(tableColumnList[key])
           }
         })

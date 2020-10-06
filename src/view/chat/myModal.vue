@@ -8,44 +8,38 @@
         <span>{{modalOpt.name}}</span>
       </p>
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-        <FormItem label="title" prop="title">
-          <Input v-model="formValidate.title" placeholder="Enter your title"></Input>
+        <FormItem label="名称" prop="title">
+          <Input v-model="formValidate.title" placeholder="请输入名称"></Input>
         </FormItem>
-        <FormItem label="description" prop="description">
-          <Input v-model="formValidate.description" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter your description"></Input>
+        <FormItem label="描述" prop="description">
+          <Input v-model="formValidate.description" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入描述"></Input>
         </FormItem>
         <FormItem label="username" prop="username">
-          <Input v-model="formValidate.username" placeholder="Enter your username"></Input>
+          <Input v-model="formValidate.username" placeholder="请输入username"></Input>
         </FormItem>
-        <FormItem label="type" prop="type">
+        <FormItem label="类型" prop="type">
           <RadioGroup v-model="formValidate.type">
             <Radio label="supergroup">supergroup</Radio>
             <Radio label="channel">channel</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="tags" prop="tags">
-          <Input v-model="publish_data.tags" placeholder="Enter your tags ，点击回车添加" @on-keyup="publish_data.tags = publish_data.tags.trim()" @on-enter="add_tags" @on-blur="add_tags"></Input>
-          <div class="publish-tags">
-            <Tag closable @on-close="del_tags(key)" v-for="(item,key) in formValidate.tags" :key="key">{{item}}</Tag>
-          </div>
+        <FormItem label="成员数" prop="member_count">
+          <Input v-model="formValidate.member_count" type="number" number placeholder="请输入成员数"></Input>
         </FormItem>
-        <FormItem label="member_count" prop="member_count">
-          <Input v-model="formValidate.member_count" type="number" number placeholder="Enter your member_count"></Input>
+        <FormItem label="语言" prop="lang">
+          <Input v-model="formValidate.lang" placeholder="请输入语言"></Input>
         </FormItem>
-        <FormItem label="lang" prop="lang">
-          <Input v-model="formValidate.lang" placeholder="Enter your lang"></Input>
+        <FormItem label="权重" prop="score">
+          <Input v-model="formValidate.score" type="number" number placeholder="请输入权重"></Input>
         </FormItem>
-        <FormItem label="score" prop="score">
-          <Input v-model="formValidate.score" type="number" number placeholder="Enter your score"></Input>
-        </FormItem>
-        <FormItem label="keywords" prop="keywords">
-          <Input v-model="publish_data.keywords" placeholder="Enter your keywords ，点击回车添加" @on-keyup="publish_data.keywords = publish_data.keywords.trim()" @on-enter="add_keywords" @on-blur="add_keywords"></Input>
+        <FormItem label="关键词" prop="keywords">
+          <Input v-model="publish_data.keywords" placeholder="请输入关键词 ，点击回车添加" @on-keyup="publish_data.keywords = publish_data.keywords.trim()" @on-enter="add_keywords" @on-blur="add_keywords"></Input>
           <div class="publish-keywords">
             <Tag closable @on-close="del_keywords(key)" v-for="(item,key) in formValidate.keywords" :key="key">{{item}}</Tag>
           </div>
         </FormItem>
-        <FormItem label="end_at" prop="end_at">
-          <DatePicker v-model="get_end_at" type="datetime" placeholder="Select your end_at"></DatePicker>
+        <FormItem label="结束时间" prop="end_at">
+          <DatePicker v-model="get_end_at" type="datetime" placeholder="请选择结束时间"></DatePicker>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -61,16 +55,9 @@
   export default {
     props: ['modalOptObj','formValidateObj'],
     data () {
-      const tagsCheck = (rule, value, callback) => {
-        if (this.formValidate.tags.length < 1) {
-          callback(new Error('The tags cannot be empty'));
-        } else {
-          callback();
-        }
-      };
       const keywordsCheck = (rule, value, callback) => {
         if (this.formValidate.keywords.length < 1) {
-          callback(new Error('The keywords cannot be empty'));
+          callback(new Error('关键词不能为空'));
         } else {
           callback();
         }
@@ -79,41 +66,36 @@
         modalOpt: {...this.modalOptObj},
         formValidate: {...this.formValidateObj},
         publish_data: {
-          tags: '',
-          tags_arr: [],
           keywords: '',
-          keywords_arr: []
+          keywords_arr: [...this.formValidateObj.keywords]
         },
         ruleValidate: {
           title: [
-            { required: true, message: 'The title cannot be empty', trigger: 'blur' }
+            { required: true, message: '名称不能为空', trigger: 'blur' }
           ],
           description: [
-            { required: true, message: 'The description cannot be empty', trigger: 'blur' }
+            { required: true, message: '描述不能为空', trigger: 'blur' }
           ],
           username: [
-            { required: true, message: 'The username cannot be empty', trigger: 'blur' }
+            { required: true, message: 'username不能为空', trigger: 'blur' }
           ],
           type: [
-            { required: true, message: 'Please type the type', trigger: 'change' }
-          ],
-          tags: [
-            { validator: tagsCheck, trigger: 'blur' }
+            { required: true, message: '类型不能为空', trigger: 'change' }
           ],
           member_count: [
-            { required: true, type: 'number', message: 'The member_count cannot be empty', trigger: 'blur' }
+            { required: true, type: 'number', message: '成员数不能为空', trigger: 'blur' }
           ],
           lang: [
-            { required: true, message: 'The lang cannot be empty', trigger: 'blur' }
+            { required: true, message: '语言不能为空', trigger: 'blur' }
           ],
           score: [
-            { required: true, type: 'number', message: 'The score cannot be empty', trigger: 'blur' }
+            { required: true, type: 'number', message: '权重不能为空', trigger: 'blur' }
           ],
           keywords: [
             { validator: keywordsCheck, trigger: 'blur' }
           ],
           end_at: [
-            { required: true, type: 'date', message: 'The end_at cannot be empty', trigger: 'change' }
+            { required: true, type: 'date', message: '结束时间不能为空', trigger: 'change' }
           ]
         }
       }
@@ -138,18 +120,6 @@
       },
       timestamp_to_date(timestamp){
         return new Date(timestamp)
-      },
-      add_tags(){
-        if (!this.publish_data.tags.length) {
-          return false
-        }
-        this.publish_data.tags_arr.push(this.publish_data.tags)
-        this.publish_data.tags = ''
-        this.formValidate.tags = [...this.publish_data.tags_arr]
-      },
-      del_tags(key){
-        this.publish_data.tags_arr.splice(key,1)
-        this.formValidate.tags = [...this.publish_data.tags_arr]
       },
       add_keywords(){
         if (!this.publish_data.keywords.length) {

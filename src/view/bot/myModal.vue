@@ -9,21 +9,21 @@
       </p>
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
         <FormItem label="name" prop="name">
-          <Input v-model="formValidate.name" placeholder="Enter your name"></Input>
+          <Input v-model="formValidate.name" placeholder="请输入name"></Input>
         </FormItem>
         <FormItem label="username" prop="username">
-          <Input v-model="formValidate.username" placeholder="Enter your username"></Input>
+          <Input v-model="formValidate.username" placeholder="请输入username"></Input>
         </FormItem>
         <FormItem label="token" prop="token">
-          <Input v-model="formValidate.token" placeholder="Enter your token"></Input>
+          <Input v-model="formValidate.token" placeholder="请输入token"></Input>
         </FormItem>
-        <FormItem label="type" prop="type">
-          <Input v-model="formValidate.type" placeholder="Enter your type"></Input>
+        <FormItem label="类型" prop="type">
+          <Input v-model="formValidate.type" placeholder="请输入类型"></Input>
         </FormItem>
-        <FormItem label="cburl" prop="cburl">
-          <Input v-model="formValidate.cburl" placeholder="Enter your cburl"></Input>
+        <FormItem label="回调域" prop="cburl">
+          <Input v-model="formValidate.cburl" placeholder="请输入回调域"></Input>
         </FormItem>
-        <FormItem label="status" prop="status">
+        <FormItem label="状态" prop="status">
           <RadioGroup v-model="formValidate.status">
             <Radio :label="1">success</Radio>
             <Radio :label="0">disable</Radio>
@@ -48,22 +48,22 @@
         formValidate: {...this.formValidateObj},
         ruleValidate: {
           name: [
-            { required: true, message: 'The name cannot be empty', trigger: 'blur' }
+            { required: true, message: 'name不能为空', trigger: 'blur' }
           ],
           username: [
-            { required: true, message: 'The username cannot be empty', trigger: 'blur' }
+            { required: true, message: 'username不能为空', trigger: 'blur' }
           ],
           token: [
-            { required: true, message: 'The token cannot be empty', trigger: 'blur' }
+            { required: true, message: 'token不能为空', trigger: 'blur' }
           ],
           type: [
-            { required: true, message: 'The type cannot be empty', trigger: 'blur' }
+            { required: true, message: '类型不能为空', trigger: 'blur' }
           ],
           cburl: [
-            { required: true, message: 'The cburl cannot be empty', trigger: 'blur' }
+            { required: true, message: '回调域不能为空', trigger: 'blur' }
           ],
           status: [
-            { required: true, type: 'number', message: 'Please select the status', trigger: 'change' }
+            { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ]
         }
       }

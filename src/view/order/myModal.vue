@@ -8,12 +8,12 @@
         <span>{{modalOpt.name}}</span>
       </p>
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-        <FormItem label="aid" prop="aid">
-          <Input v-model="formValidate.aid._id" disabled placeholder="Select your aid"></Input>
+        <FormItem label="广告ID" prop="aid">
+          <Input v-model="formValidate.aid._id" disabled placeholder="请选择广告"></Input>
           <Row type="flex" justify="center" align="middle">
             <Col span="24" style="text-align: center">
               <span @click="tableFlag = !tableFlag" style="cursor: pointer">
-                <Icon size="22" type="md-arrow-dropdown" :class="{'table_hide':!tableFlag}" class="table_show"/> ads list
+                <Icon size="22" type="md-arrow-dropdown" :class="{'table_hide':!tableFlag}" class="table_show"/> 广告列表
               </span>
             </Col>
             <Col span="24" v-show="tableFlag" :class="{'table_box_hide':!tableFlag}" class="table_box_show">
@@ -26,7 +26,7 @@
                           :confirm="false"
                           type="datetimerange"
                           placement="bottom-end"
-                          placeholder="Select date"
+                          placeholder="选择日期"
                           style="width: 330px"
                           @on-ok="dateChange(true)"
                           @on-clear="dateChange(false)"
@@ -42,7 +42,7 @@
                           clearable
                           search
                           enter-button="search"
-                          placeholder="Please enter keywords"
+                          placeholder="请输入关键字"
                           v-model="search.keywords"
                           @on-keyup="(search.keywords = search.keywords.trim())"
                           @on-search="searchKeywords(true)"
@@ -54,10 +54,10 @@
                             class="search-input-select"
                             v-model="search.type"
                             @on-clear="searchKeywords(false)">
-                      <Option value="text">text (模糊匹配)</Option>
-                      <Option value="link">link (模糊匹配)</Option>
-                      <Option value="count">count (精准匹配)</Option>
-                      <Option value="status">status (精准匹配)</Option>
+                      <Option value="text">广告文本 (模糊匹配)</Option>
+                      <Option value="link">链接 (模糊匹配)</Option>
+                      <Option value="count">点击次数 (精准匹配)</Option>
+                      <Option value="status">状态 (精准匹配)</Option>
                     </Select>
                   </Input>
                 </Col>
@@ -81,13 +81,13 @@
           </Row>
 
         </FormItem>
-        <FormItem label="time" prop="time">
+        <FormItem label="购买时长" prop="time">
           <Input v-model="formValidate.time" type="number" number placeholder="Enter your time"></Input>
         </FormItem>
-        <FormItem label="memo" prop="memo">
+        <FormItem label="备注" prop="memo">
           <Input v-model="formValidate.memo" placeholder="Enter your memo"></Input>
         </FormItem>
-        <FormItem label="type" prop="type">
+        <FormItem label="类型" prop="type">
           <RadioGroup v-model="formValidate.type">
             <Radio :label="1">1</Radio>
             <Radio :label="2">2</Radio>
@@ -110,7 +110,7 @@
     data () {
       const aidCheck = (rule, value, callback) => {
         if (!this.formValidate.aid._id) {
-          callback(new Error('The tags cannot be empty'));
+          callback(new Error('广告ID不能为空'));
         } else {
           callback();
         }
@@ -123,13 +123,13 @@
             { validator: aidCheck, trigger: 'blur' }
           ],
           time: [
-            { required: true, type: 'number', message: 'The time cannot be empty', trigger: 'blur' }
+            { required: true, type: 'number', message: '购买时长不能为空', trigger: 'blur' }
           ],
           memo: [
-            { required: true, message: 'The memo cannot be empty', trigger: 'blur' }
+            { required: true, message: '备注不能为空', trigger: 'blur' }
           ],
           type: [
-            { required: true, type: 'number', message: 'The type cannot be empty', trigger: 'change' }
+            { required: true, type: 'number', message: '类型不能为空', trigger: 'change' }
           ]
         },
         search: {
@@ -147,31 +147,31 @@
         tableData: [],
         tableColumns: [
           {
-            title: 'text',
+            title: '广告文本',
             key: 'text',
             align: 'center',
             fixed: 'left',
             width: 120,
           },
           {
-            title: 'link',
+            title: '链接',
             key: 'link',
             width: 200,
           },
           {
-            title: 'count',
+            title: '点击次数',
             key: 'count',
             width: 150,
           },
           {
-            title: 'status',
+            title: '状态',
             key: 'status',
             width: 150,
             sortable: true,
             render:(h, params) => {
               const row = params.row
-              const color = row.status === false ? 'warning' : row.status === true ? 'success' : 'error'
-              const text = row.status === false ? 'Disable' : row.status === true ? 'Success' : 'Fail'
+              const color = row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'error'
+              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
               return h('Tag', {
                 props: {
                   type: 'dot',
@@ -181,25 +181,25 @@
             }
           },
           {
-            title: 'last_show',
+            title: '上次展示时间',
             key: 'last_show',
             width: 150,
             sortable: true
           },
           {
-            title: 'end_at',
+            title: '结束时间',
             key: 'end_at',
             width: 150,
             sortable: true
           },
           {
-            title: 'created_at',
+            title: '创建时间',
             key: 'created_at',
             width: 150,
             sortable: true
           },
           {
-            title: 'updated_at',
+            title: '更新时间',
             key: 'updated_at',
             width: 150,
             sortable: true

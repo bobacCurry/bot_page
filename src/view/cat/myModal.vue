@@ -8,20 +8,20 @@
         <span>{{modalOpt.name}}</span>
       </p>
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="110">
-        <FormItem label="text" prop="text">
-          <Input v-model="formValidate.text" placeholder="Enter your text"></Input>
+        <FormItem label="分类名称" prop="text">
+          <Input v-model="formValidate.text" placeholder="请输入分类名称"></Input>
         </FormItem>
-        <FormItem label="tags" prop="tags">
-          <Input v-model="publish_data.tags" placeholder="Enter your tags ，点击回车添加" @on-keyup="publish_data.tags = publish_data.tags.trim()" @on-blur="add_tags" @on-enter="add_tags"></Input>
+        <FormItem label="标签" prop="tags">
+          <Input v-model="publish_data.tags" placeholder="请输入标签 ，点击回车添加" @on-keyup="publish_data.tags = publish_data.tags.trim()" @on-blur="add_tags" @on-enter="add_tags"></Input>
           <div class="publish-tags">
             <Tag closable @on-close="del_tags(key)" v-for="(item,key) in formValidate.tags" :key="key">{{item}}</Tag>
           </div>
         </FormItem>
-        <FormItem label="lang" prop="lang">
-          <Input v-model="formValidate.lang" placeholder="Enter your lang"></Input>
+        <FormItem label="语言" prop="lang">
+          <Input v-model="formValidate.lang" placeholder="请输入语言"></Input>
         </FormItem>
-        <FormItem label="sort" prop="sort">
-          <Input v-model="formValidate.sort" type="number" number placeholder="Enter your sort"></Input>
+        <FormItem label="排序" prop="sort">
+          <Input v-model="formValidate.sort" type="number" number placeholder="请输入排序"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -39,7 +39,7 @@
     data () {
       const tagsCheck = (rule, value, callback) => {
         if (this.formValidate.tags.length < 1) {
-          callback(new Error('The tags cannot be empty'));
+          callback(new Error('标签不能为空'));
         } else {
           callback();
         }
@@ -49,20 +49,20 @@
         formValidate: {...this.formValidateObj},
         publish_data: {
           tags: '',
-          tags_arr: []
+          tags_arr: [...this.formValidateObj.tags]
         },
         ruleValidate: {
           text: [
-            { required: true, message: 'The text cannot be empty', trigger: 'blur' }
+            { required: true, message: '分类名称不能为空', trigger: 'blur' }
           ],
           tags: [
             { validator: tagsCheck, trigger: 'blur' }
           ],
           lang: [
-            { required: true, message: 'The lang cannot be empty', trigger: 'blur' }
+            { required: true, message: '语言不能为空', trigger: 'blur' }
           ],
           sort: [
-            { required: true, type: 'number', message: 'The sort cannot be empty', trigger: 'blur' }
+            { required: true, type: 'number', message: '排序不能为空', trigger: 'blur' }
           ]
         }
       }

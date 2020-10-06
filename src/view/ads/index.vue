@@ -6,16 +6,16 @@
           <Card class="option-card"><Button type="info" @click="createShow()">create ads</Button></Card>
         </Col>
         <Col>
-          <Card class="option-card"><Button type="success" @click="setStatus(true)">Success</Button></Card>
+          <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
         </Col>
         <Col>
-          <Card class="option-card"><Button type="warning" @click="setStatus(false)">Disable</Button></Card>
+          <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
-          <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
+          <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
         <Col>
-          <Card size="small" class="option-card">search <i-switch v-model="search.flag"></i-switch></Card>
+          <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
         </Col>
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
@@ -27,7 +27,7 @@
                   :confirm="false"
                   type="datetimerange"
                   placement="bottom-end"
-                  placeholder="Select date"
+                  placeholder="选择日期"
                   style="width: 330px"
                   @on-ok="dateChange(true)"
                   @on-clear="dateChange(false)"
@@ -41,7 +41,7 @@
                   clearable
                   search
                   enter-button="search"
-                  placeholder="Please enter keywords"
+                  placeholder="请输入关键字"
                   v-model="search.keywords"
                   @on-keyup="(search.keywords = search.keywords.trim())"
                   @on-search="searchKeywords(true)"
@@ -53,18 +53,18 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="text">text (模糊匹配)</Option>
-              <Option value="link">link (模糊匹配)</Option>
-              <Option value="count">count (精准匹配)</Option>
-              <Option value="status">status (精准匹配)</Option>
+              <Option value="text">广告文本 (模糊匹配)</Option>
+              <Option value="link">链接 (模糊匹配)</Option>
+              <Option value="count">点击次数 (精准匹配)</Option>
+              <Option value="status">状态 (精准匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
       <Table ref="ads" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
-          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
+          <Button type="primary" size="small" @click="editShow(index)">编辑</Button>
+          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">删除</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">
@@ -98,15 +98,42 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          link:true,
-          count:true,
-          status:true,
-          last_show:true,
-          end_at:true,
-          created_at:true,
-          updated_at:true,
-          action:true
+          selection:{
+            title:'选择框',
+            status:true,
+          },
+          link:{
+            title:'链接',
+            status:true,
+          },
+          count:{
+            title:'点击次数',
+            status:true,
+          },
+          status:{
+            title:'状态',
+            status:true,
+          },
+          last_show:{
+            title:'上次展示时间',
+            status:true,
+          },
+          end_at:{
+            title:'结束时间',
+            status:true,
+          },
+          created_at:{
+            title:'创建时间',
+            status:true,
+          },
+          updated_at:{
+            title:'更新时间',
+            status:true,
+          },
+          action:{
+            title:'操作',
+            status:true,
+          }
         },
         modalOpt: {
           edit: true,
@@ -121,7 +148,7 @@
           text: '',
           link: '',
           count: 0,
-          status: false,
+          status: 0,
           last_show: new Date().getTime(),
           end_at: new Date().getTime(),
         }
@@ -171,32 +198,32 @@
             width: 60
           },
           text: {
-            title: 'text',
+            title: '广告文本',
             key: 'text',
             align: 'center',
             fixed: 'left',
             width: 120,
           },
           link: {
-            title: 'link',
+            title: '链接',
             key: 'link',
             width: 200,
           },
           count: {
-            title: 'count',
+            title: '点击次数',
             key: 'count',
             width: 150,
             sortable: true,
           },
           status: {
-            title: 'status',
+            title: '状态',
             key: 'status',
             width: 150,
             sortable: true,
             render:(h, params) => {
               const row = params.row
-              const color = row.status === false ? 'warning' : row.status === true ? 'success' : 'error'
-              const text = row.status === false ? 'Disable' : row.status === true ? 'Success' : 'Fail'
+              const color = row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'error'
+              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
               return h('Tag', {
                 props: {
                   type: 'dot',
@@ -206,31 +233,31 @@
             }
           },
           last_show: {
-            title: 'last_show',
+            title: '上次展示时间',
             key: 'last_show',
             width: 150,
             sortable: true
           },
           end_at: {
-            title: 'end_at',
+            title: '结束时间',
             key: 'end_at',
             width: 150,
             sortable: true
           },
           created_at: {
-            title: 'created_at',
+            title: '创建时间',
             key: 'created_at',
             width: 150,
             sortable: true
           },
           updated_at: {
-            title: 'updated_at',
+            title: '更新时间',
             key: 'updated_at',
             width: 150,
             sortable: true
           },
           action: {
-            title: 'Action',
+            title: '操作',
             slot: 'action',
             width: 150,
             align: 'center'
@@ -241,9 +268,9 @@
         let data = [tableColumnList.text]
 
         Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key]){
+          if(key=='selection' && obj[key].status){
             data.splice(0,0,tableColumnList[key])
-          }else if(obj[key]){
+          }else if(obj[key].status){
             data.push(tableColumnList[key])
           }
         })
@@ -300,7 +327,7 @@
         }
 
         this.$Modal.confirm({
-          title: `将 status 修改 ${status==true?'Success':'Disable'}`,
+          title: `将 status 修改 ${status==1?'Success':'Disable'}`,
           onOk:()=>{
             let selectionData = this.$refs['ads'].objData,
                 model = 'ads',

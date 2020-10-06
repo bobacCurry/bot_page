@@ -26,7 +26,7 @@
           <Row>
             <Col span="11">
               <FormItem prop="date">
-                <DatePicker type="date" placeholder="Select date" v-model="formValidate.date"></DatePicker>
+                <DatePicker type="date" placeholder="选择日期" v-model="formValidate.date"></DatePicker>
               </FormItem>
             </Col>
             <Col span="2" style="text-align: center">-</Col>

@@ -15,7 +15,7 @@
           <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
         </Col>
         <Col>
-          <Card size="small" class="option-card">search <i-switch v-model="search.flag"></i-switch></Card>
+          <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
         </Col>
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
@@ -28,7 +28,7 @@
                   :confirm="false"
                   type="datetimerange"
                   placement="bottom-end"
-                  placeholder="Select date"
+                  placeholder="选择日期"
                   style="width: 330px"
                   @on-ok="dateChange(true)"
                   @on-clear="dateChange(false)"
@@ -43,7 +43,7 @@
                   clearable
                   search
                   enter-button="search"
-                  placeholder="Please enter keywords"
+                  placeholder="请输入关键字"
                   v-model="search.keywords"
                   @on-keyup="(search.keywords = search.keywords.trim())"
                   @on-search="searchKeywords(true)"
@@ -67,8 +67,8 @@
       </Row>
       <Table ref="menu" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
-          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
+          <Button type="primary" size="small" @click="editShow(index)">编辑</Button>
+          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">删除</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">

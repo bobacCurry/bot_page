@@ -3,7 +3,7 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create bot</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">创建机器人</Button></Card>
         </Col>
         <Col>
           <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
@@ -12,10 +12,10 @@
           <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
-          <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
+          <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
         <Col>
-          <Card size="small" class="option-card">search <i-switch v-model="search.flag"></i-switch></Card>
+          <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
         </Col>
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
@@ -27,7 +27,7 @@
                   :confirm="false"
                   type="datetimerange"
                   placement="bottom-end"
-                  placeholder="Select date"
+                  placeholder="选择日期"
                   style="width: 330px"
                   @on-ok="dateChange(true)"
                   @on-clear="dateChange(false)"
@@ -41,7 +41,7 @@
                   clearable
                   search
                   enter-button="search"
-                  placeholder="Please enter keywords"
+                  placeholder="请输入关键字"
                   v-model="search.keywords"
                   @on-keyup="(search.keywords = search.keywords.trim())"
                   @on-search="searchKeywords(true)"
@@ -56,16 +56,16 @@
               <Option value="name">name (模糊匹配)</Option>
               <Option value="username">username (模糊匹配)</Option>
               <Option value="token">token (模糊匹配)</Option>
-              <Option value="type">type (模糊匹配)</Option>
-              <Option value="status">status (精准匹配)</Option>
+              <Option value="type">类型 (模糊匹配)</Option>
+              <Option value="status">状态 (精准匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
       <Table ref="bot" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
-          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
+          <Button type="primary" size="small" @click="editShow(index)">编辑</Button>
+          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">删除</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">
@@ -99,15 +99,42 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          username:true,
-          token:true,
-          type:true,
-          cburl:true,
-          status:true,
-          created_at:true,
-          updated_at:true,
-          action:true
+          selection:{
+            title:'选择框',
+            status:true,
+          },
+          username:{
+            title:'username',
+            status:true,
+          },
+          token:{
+            title:'token',
+            status:true,
+          },
+          type:{
+            title:'类型',
+            status:true,
+          },
+          cburl:{
+            title:'回调域',
+            status:true,
+          },
+          status:{
+            title:'状态',
+            status:true,
+          },
+          created_at:{
+            title:'创建时间',
+            status:true,
+          },
+          updated_at:{
+            title:'更新时间',
+            status:true,
+          },
+          action:{
+            title:'操作',
+            status:true,
+          }
         },
         modalOpt: {
           edit: true,
@@ -189,19 +216,19 @@
             width: 150,
           },
           type: {
-            title: 'type',
+            title: '类型',
             key: 'type',
             width: 150,
             sortable: true
           },
           cburl: {
-            title: 'cburl',
+            title: '回调域名',
             key: 'cburl',
             width: 150,
             sortable: true
           },
           status: {
-            title: 'status',
+            title: '状态',
             key: 'status',
             width: 150,
             sortable: true,
@@ -218,19 +245,19 @@
             }
           },
           created_at: {
-            title: 'created_at',
+            title: '创建时间',
             key: 'created_at',
             width: 150,
             sortable: true
           },
           updated_at: {
-            title: 'updated_at',
+            title: '更新时间',
             key: 'updated_at',
             width: 150,
             sortable: true
           },
           action: {
-            title: 'Action',
+            title: '操作',
             slot: 'action',
             width: 150,
             align: 'center'
@@ -241,9 +268,9 @@
         let data = [tableColumnList.name]
 
         Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key]){
+          if(key=='selection' && obj[key].status){
             data.splice(0,0,tableColumnList[key])
-          }else if(obj[key]){
+          }else if(obj[key].status){
             data.push(tableColumnList[key])
           }
         })

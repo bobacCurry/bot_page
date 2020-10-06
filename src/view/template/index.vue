@@ -10,7 +10,7 @@
           <strong>{{ row.name }}</strong>
         </template>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" @click="show(index)">Edit</Button>
+          <Button type="primary" size="small" @click="show(index)">编辑</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">

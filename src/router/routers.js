@@ -71,7 +71,7 @@ export default [
         name: 'bot_page',
         meta: {
           icon: ' iconfont iconbot',
-          title: 'bot'
+          title: '机器人'
         },
         component: () => import('@/view/bot/index.vue')
       }
@@ -109,7 +109,7 @@ export default [
         name: 'chat_page',
         meta: {
           icon: ' iconfont iconchat',
-          title: 'chat'
+          title: '群组/频道'
         },
         component: () => import('@/view/chat/index.vue')
       }
@@ -128,7 +128,7 @@ export default [
         name: 'cat_page',
         meta: {
           icon: ' iconfont iconcat',
-          title: 'cat'
+          title: '分类'
         },
         component: () => import('@/view/cat/index.vue')
       }
@@ -147,7 +147,7 @@ export default [
         name: 'menu_page',
         meta: {
           icon: ' iconfont iconmenu',
-          title: 'menu'
+          title: '菜单'
         },
         component: () => import('@/view/menu/index.vue')
       }
@@ -166,7 +166,7 @@ export default [
         name: 'ads_page',
         meta: {
           icon: ' iconfont iconads',
-          title: 'ads'
+          title: '广告'
         },
         component: () => import('@/view/ads/index.vue')
       }
@@ -185,169 +185,12 @@ export default [
         name: 'order_page',
         meta: {
           icon: ' iconfont iconorder',
-          title: 'order'
+          title: '订单'
         },
         component: () => import('@/view/order/index.vue')
       }
     ]
   },
-/*
-  {
-    path: '/user',
-    name: 'user',
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
-      {
-        path: 'user_page',
-        name: 'user_page',
-        meta: {
-          icon: ' iconfont iconuser',
-          title: 'user'
-        },
-        component: () => import('@/view/bot/index.vue')
-      }
-    ]
-  },
-*/
-/*
-  {
-    path: '/multilevel',
-    name: 'multilevel',
-    meta: {
-      icon: 'md-menu',
-      title: '多级菜单'
-    },
-    component: Main,
-    children: [
-      {
-        path: 'level_2_1',
-        name: 'level_2_1',
-        meta: {
-          icon: 'md-funnel',
-          title: '二级-1'
-        },
-        component: () => import('@/view/multilevel/level-2-1.vue')
-      },
-      {
-        path: 'level_2_2',
-        name: 'level_2_2',
-        meta: {
-          access: ['super_admin'],
-          icon: 'md-funnel',
-          showAlways: true,
-          title: '二级-2'
-        },
-        component: parentView,
-        children: [
-          {
-            path: 'level_2_2_1',
-            name: 'level_2_2_1',
-            meta: {
-              icon: 'md-funnel',
-              title: '三级'
-            },
-            component: () => import('@/view/multilevel/level-2-2/level-3-1.vue')
-          }
-        ]
-      },
-      {
-        path: 'level_2_3',
-        name: 'level_2_3',
-        meta: {
-          icon: 'md-funnel',
-          title: '二级-3'
-        },
-        component: () => import('@/view/multilevel/level-2-3.vue')
-      }
-    ]
-  },
-  {
-    path: '/components',
-    name: 'components',
-    meta: {
-      icon: 'logo-buffer',
-      title: '组件'
-    },
-    component: Main,
-    children: [
-      {
-        path: 'template',
-        name: 'template',
-        meta: {
-          icon: 'md-planet',
-          title: '模板'
-        },
-        component: () => import('@/view/template/index.vue')
-      },
-      {
-        path: 'tree_table_page',
-        name: 'tree_table_page',
-        meta: {
-          icon: 'md-git-branch',
-          title: '树状表格'
-        },
-        component: () => import('@/view/components/tree-table/index.vue')
-      },
-      {
-        path: 'check_table_page',
-        name: 'check_table_page',
-        meta: {
-          icon: 'md-git-branch',
-          title: '筛选表格'
-        },
-        component: () => import('@/view/components/check-table/index.vue')
-      },
-      {
-        path: 'style_table_page',
-        name: 'style_table_page',
-        meta: {
-          icon: 'md-git-branch',
-          title: '多效果表格'
-        },
-        component: () => import('@/view/components/style-table/index.vue')
-      },
-      {
-        path: 'cropper_page',
-        name: 'cropper_page',
-        meta: {
-          icon: 'md-crop',
-          title: '图片裁剪'
-        },
-        component: () => import('@/view/components/cropper/cropper.vue')
-      },
-      {
-        path: 'tables_page',
-        name: 'tables_page',
-        meta: {
-          icon: 'md-grid',
-          title: '多功能表格'
-        },
-        component: () => import('@/view/components/tables/tables.vue')
-      },
-      {
-        path: 'editor_page',
-        name: 'editor_page',
-        meta: {
-          icon: 'ios-create',
-          title: '富文本编辑器'
-        },
-        component: () => import('@/view/components/editor/editor.vue')
-      },
-      {
-        path: 'icons_page',
-        name: 'icons_page',
-        meta: {
-          icon: '_bear',
-          title: '自定义图标'
-        },
-        component: () => import('@/view/components/icons/icons.vue')
-      }
-    ]
-  },
-*/
   {
     path: '/401',
     name: 'error_401',

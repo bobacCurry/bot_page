@@ -6,10 +6,10 @@
           <Card class="option-card"><Button type="info" @click="createShow()">create cat</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
-          <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
+          <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
         <Col>
-          <Card size="small" class="option-card">search <i-switch v-model="search.flag"></i-switch></Card>
+          <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
         </Col>
       </Row>
       <Row type="flex" justify="end" align="middle" class="table-search" v-show="search.flag">
@@ -21,7 +21,7 @@
                   :confirm="false"
                   type="datetimerange"
                   placement="bottom-end"
-                  placeholder="Select date"
+                  placeholder="选择日期"
                   style="width: 330px"
                   @on-ok="dateChange(true)"
                   @on-clear="dateChange(false)"
@@ -35,7 +35,7 @@
                   clearable
                   search
                   enter-button="search"
-                  placeholder="Please enter keywords"
+                  placeholder="请输入关键字"
                   v-model="search.keywords"
                   @on-keyup="(search.keywords = search.keywords.trim())"
                   @on-search="searchKeywords(true)"
@@ -47,18 +47,18 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="text">text (模糊匹配)</Option>
-              <Option value="tags">tags (模糊匹配)</Option>
-              <Option value="lang">lang (模糊匹配)</Option>
-              <Option value="sort">sort (精准匹配)</Option>
+              <Option value="text">分类名称 (模糊匹配)</Option>
+              <Option value="tags">标签 (模糊匹配)</Option>
+              <Option value="lang">语言 (模糊匹配)</Option>
+              <Option value="sort">排序 (精准匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
       <Table ref="cat" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" @click="editShow(index)">Edit</Button>
-          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">Remove</Button>
+          <Button type="primary" size="small" @click="editShow(index)">编辑</Button>
+          <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">删除</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">
@@ -92,13 +92,34 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection: true,
-          tags: true,
-          lang: true,
-          sort: true,
-          created_at:true,
-          updated_at:true,
-          action:true
+          selection: {
+            title:'选择框',
+            status:true,
+          },
+          tags: {
+            title:'标签',
+            status:true,
+          },
+          lang: {
+            title:'语言',
+            status:true,
+          },
+          sort: {
+            title:'排序',
+            status:true,
+          },
+          created_at:{
+            title:'创建时间',
+            status:true,
+          },
+          updated_at:{
+            title:'更新时间',
+            status:true,
+          },
+          action:{
+            title:'操作',
+            status:true,
+          }
         },
         modalOpt: {
           index: 0,
@@ -159,12 +180,13 @@
             width: 60
           },
           text: {
-            title: 'text',
+            title: '分类名称',
             key: 'text',
+            fixed: 'left',
             width: 150
           },
           tags: {
-            title: 'tags',
+            title: '标签',
             key: 'tags',
             width: 150,
             render: (h, params) => {
@@ -197,31 +219,31 @@
             }
           },
           lang: {
-            title: 'lang',
+            title: '语言',
             key: 'lang',
             width: 150,
             sortable: true
           },
           sort: {
-            title: 'sort',
+            title: '排序',
             key: 'sort',
             width: 150,
             sortable: true
           },
           created_at: {
-            title: 'created_at',
+            title: '创建时间',
             key: 'created_at',
             width: 150,
             sortable: true
           },
           updated_at: {
-            title: 'updated_at',
+            title: '更新时间',
             key: 'updated_at',
             width: 150,
             sortable: true
           },
           action: {
-            title: 'Action',
+            title: '操作',
             slot: 'action',
             width: 150,
             align: 'center'
@@ -232,9 +254,9 @@
         let data = [tableColumnList.text]
 
         Object.keys(obj).forEach(function (key) {
-          if (key=='selection' && obj[key]){
+          if (key=='selection' && obj[key].status){
             data.splice(0,0,tableColumnList[key])
-          }else if(obj[key]){
+          }else if(obj[key].status){
             data.push(tableColumnList[key])
           }
         })

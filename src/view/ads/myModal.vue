@@ -8,26 +8,23 @@
         <span>{{modalOpt.name}}</span>
       </p>
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-        <FormItem label="text" prop="text">
-          <Input v-model="formValidate.text" placeholder="Enter your text"></Input>
+        <FormItem label="广告文本" prop="text">
+          <Input v-model="formValidate.text" placeholder="请输入广告文本"></Input>
         </FormItem>
-        <FormItem label="link" prop="link">
-          <Input v-model="formValidate.link" placeholder="Enter your link"></Input>
+        <FormItem label="链接" prop="link">
+          <Input v-model="formValidate.link" placeholder="请输入链接"></Input>
         </FormItem>
-        <FormItem label="count" prop="count">
-          <Input v-model="formValidate.count" type="number" number placeholder="Enter your count"></Input>
-        </FormItem>
-        <FormItem label="status" prop="status">
+        <FormItem label="状态" prop="status">
           <RadioGroup v-model="formValidate.status">
-            <Radio :label="true">success</Radio>
-            <Radio :label="false">disable</Radio>
+            <Radio :label="1">success</Radio>
+            <Radio :label="0">disable</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="last_show" prop="last_show">
-          <DatePicker v-model="get_last_show" type="datetime" placeholder="Select your last_show"></DatePicker>
+        <FormItem label="上次展示时间" prop="last_show">
+          <DatePicker v-model="get_last_show" type="datetime" placeholder="请选择上次展示时间"></DatePicker>
         </FormItem>
-        <FormItem label="end_at" prop="end_at">
-          <DatePicker v-model="get_end_at" type="datetime" placeholder="Select your end_at"></DatePicker>
+        <FormItem label="结束时间" prop="end_at">
+          <DatePicker v-model="get_end_at" type="datetime" placeholder="请选择结束时间"></DatePicker>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -48,22 +45,19 @@
         formValidate: {...this.formValidateObj},
         ruleValidate: {
           text: [
-            { required: true, message: 'The text cannot be empty', trigger: 'blur' }
+            { required: true, message: '广告文本不能为空', trigger: 'blur' }
           ],
           link: [
-            { required: true, message: 'The link cannot be empty', trigger: 'blur' }
-          ],
-          count: [
-            { required: true, type: 'number', message: 'The count cannot be empty', trigger: 'blur' }
+            { required: true, message: '链接不能为空', trigger: 'blur' }
           ],
           status: [
-            { required: true, type: 'boolean', message: 'Please select the status', trigger: 'change' }
+            { required: true, type: 'number', message: '状态不能为空', trigger: 'change' }
           ],
           last_show: [
-            { required: true, type: 'date', message: 'The last_show cannot be empty', trigger: 'change' }
+            { required: true, type: 'date', message: '上次展示时间不能为空', trigger: 'change' }
           ],
           end_at: [
-            { required: true, type: 'date', message: 'The end_at cannot be empty', trigger: 'change' }
+            { required: true, type: 'date', message: '结束时间不能为空', trigger: 'change' }
           ]
         }
       }
