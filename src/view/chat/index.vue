@@ -97,7 +97,7 @@
         tableColumns: [],
         tableColumnsChecked: {
           selection: {
-            title:'名称',
+            title:'选择框',
             status:true,
           },
           description: {
