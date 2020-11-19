@@ -51,3 +51,37 @@ export const remove_data = ({ model, id }) => {
     data
   })
 }
+
+
+
+export const engine_get_list = ({ model, data }) => {
+  return axios.request({
+    url: `backend/${model}_get_list`,
+    method: 'post',
+    data
+  })
+}
+
+export const engine_edit_data = ({ model, data }) => {
+  return axios.request({
+    url: `backend/${model}_edit`,
+    method: 'post',
+    data
+  })
+}
+
+export const engine_create_data = ({ model, data }) => {
+  return axios.request({
+    url: `backend/${model}_create`,
+    method: 'post',
+    data
+  })
+}
+
+export const engine_remove_data = ({ model, data }) => {
+  return axios.request({
+    url: `backend/${model}_remove`,
+    method: 'post',
+    data
+  })
+}

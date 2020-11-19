@@ -26,6 +26,9 @@
         <FormItem label="成员数" prop="member_count">
           <Input v-model="formValidate.member_count" type="number" number placeholder="请输入成员数"></Input>
         </FormItem>
+        <FormItem label="语言" prop="lang">
+          <Input v-model="formValidate.lang" placeholder="请输入语言"></Input>
+        </FormItem>
         <FormItem label="权重" prop="score">
           <Input v-model="formValidate.score" type="number" number placeholder="请输入权重"></Input>
         </FormItem>
@@ -35,10 +38,14 @@
             <Tag closable @on-close="del_keywords(key)" v-for="(item,key) in formValidate.keywords" :key="key">{{item}}</Tag>
           </div>
         </FormItem>
+        <FormItem label="结束时间" prop="end_at">
+          <DatePicker v-model="get_end_at" type="datetime" placeholder="请选择结束时间"></DatePicker>
+        </FormItem>
       </Form>
       <div slot="footer">
         <Button @click="handleCancel()">取消</Button>
-        <Button type="primary" @click="editSubmit('formValidate')" style="margin-left: 8px" :loading="modalOpt.loading">编辑</Button>
+        <Button type="primary" @click="editSubmit('formValidate')" style="margin-left: 8px" :loading="modalOpt.loading" v-if="modalOptObj.edit">编辑</Button>
+        <Button type="primary" @click="createSubmit('formValidate')" style="margin-left: 8px" :loading="modalOpt.loading" v-else>创建</Button>
       </div>
     </Modal>
   </div>
@@ -66,6 +73,9 @@
           title: [
             { required: true, message: '名称不能为空', trigger: 'blur' }
           ],
+          description: [
+            { required: true, message: '描述不能为空', trigger: 'blur' }
+          ],
           username: [
             { required: true, message: 'username不能为空', trigger: 'blur' }
           ],
@@ -75,8 +85,17 @@
           member_count: [
             { required: true, type: 'number', message: '成员数不能为空', trigger: 'blur' }
           ],
+          lang: [
+            { required: true, message: '语言不能为空', trigger: 'blur' }
+          ],
           score: [
             { required: true, type: 'number', message: '权重不能为空', trigger: 'blur' }
+          ],
+          keywords: [
+            { validator: keywordsCheck, trigger: 'blur' }
+          ],
+          end_at: [
+            { required: true, type: 'date', message: '结束时间不能为空', trigger: 'change' }
           ]
         }
       }
@@ -93,7 +112,8 @@
     },
     methods: {
       ...mapActions([
-        'engineEditData'
+        'editData',
+        'createData'
       ]),
       date_to_timestamp(date){
         return new Date(date).getTime();
@@ -113,21 +133,41 @@
         this.publish_data.keywords_arr.splice(key,1)
         this.formValidate.keywords = [...this.publish_data.keywords_arr]
       },
+      createSubmit (name) {
+        this.modalOpt.loading = true
+        this.$refs[name].validate((valid) => {
+          if (valid) {
+            let model = 'chat'
+            let data = this.formValidate
+            this.createData({ model, data }).then(res => {
+              if(res.success){
+                this.formValidate = res.data
+                this.modalOpt.loading = false
+                this.modalOpt.flag = false
+                this.$emit('createTableData', {modalOpt:this.modalOpt,formValidate:this.formValidate} ) //触发当前实例上的事件
+                this.$Message.success(res.msg)
+              }
+            }).catch((e)=>{
+              this.$Notice.error({title:e.response.data.msg})
+            })
+          } else {
+            this.$Message.error('Fail!')
+            this.modalOpt.loading = false
+          }
+        })
+      },
       editSubmit (name) {
         this.modalOpt.loading = true
         this.$refs[name].validate((valid) => {
           if (valid) {
             let model = 'chat'
             let data = this.formValidate
-            this.engineEditData({ model, data }).then(res => {
+            this.editData({ model, data }).then(res => {
               if(res.success){
                 this.formValidate = res.data
                 this.modalOpt.loading = false
                 this.modalOpt.flag = false
                 this.$emit('updateTableData', {modalOpt:this.modalOpt,formValidate:this.formValidate} ) //触发当前实例上的事件
-                this.$Message.success(res.msg)
-              }else {
-                this.modalOpt.loading = false
                 this.$Message.success(res.msg)
               }
             }).catch((e)=>{

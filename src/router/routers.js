@@ -192,6 +192,89 @@ export default [
     ]
   },
   {
+    path: '/components',
+    name: 'components',
+    meta: {
+      icon: 'logo-buffer',
+      title: '组件'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'template',
+        name: 'template',
+        meta: {
+          icon: 'md-planet',
+          title: '模板'
+        },
+        component: () => import('@/view/template/index.vue')
+      },
+      {
+        path: 'tree_table_page',
+        name: 'tree_table_page',
+        meta: {
+          icon: 'md-git-branch',
+          title: '树状表格'
+        },
+        component: () => import('@/view/components/tree-table/index.vue')
+      },
+      {
+        path: 'check_table_page',
+        name: 'check_table_page',
+        meta: {
+          icon: 'md-git-branch',
+          title: '筛选表格'
+        },
+        component: () => import('@/view/components/check-table/index.vue')
+      },
+      {
+        path: 'style_table_page',
+        name: 'style_table_page',
+        meta: {
+          icon: 'md-git-branch',
+          title: '多效果表格'
+        },
+        component: () => import('@/view/components/style-table/index.vue')
+      },
+      {
+        path: 'cropper_page',
+        name: 'cropper_page',
+        meta: {
+          icon: 'md-crop',
+          title: '图片裁剪'
+        },
+        component: () => import('@/view/components/cropper/cropper.vue')
+      },
+      {
+        path: 'tables_page',
+        name: 'tables_page',
+        meta: {
+          icon: 'md-grid',
+          title: '多功能表格'
+        },
+        component: () => import('@/view/components/tables/tables.vue')
+      },
+      {
+        path: 'editor_page',
+        name: 'editor_page',
+        meta: {
+          icon: 'ios-create',
+          title: '富文本编辑器'
+        },
+        component: () => import('@/view/components/editor/editor.vue')
+      },
+      {
+        path: 'icons_page',
+        name: 'icons_page',
+        meta: {
+          icon: '_bear',
+          title: '自定义图标'
+        },
+        component: () => import('@/view/components/icons/icons.vue')
+      }
+    ]
+  },
+  {
     path: '/401',
     name: 'error_401',
     meta: {

@@ -3,7 +3,11 @@ import {
   edit_data,
   create_data,
   change_status,
-  remove_data
+  remove_data,
+  engine_get_list,
+  engine_edit_data,
+  engine_create_data,
+  engine_remove_data,
 } from '@/api/model'
 
 export default {
@@ -44,7 +48,7 @@ export default {
         })
       })
     },
-    // 修改
+    // 创建
     createData ({}, {model, data }) {
       return new Promise((resolve, reject) => {
         create_data({
@@ -73,7 +77,7 @@ export default {
         })
       })
     },
-    // 删除器人
+    // 删除
     removeData ({}, {model, id }) {
       return new Promise((resolve, reject) => {
         remove_data({
@@ -86,6 +90,66 @@ export default {
           reject(err)
         })
       })
-    }
+    },
+
+    // 获取引擎列表
+    engineGetList ({}, { model, data }) {
+      return new Promise((resolve, reject) => {
+        engine_get_list({
+          model,
+          data
+        }).then(res => {
+          const data = res.data
+          resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+
+    // 引擎修改
+    engineEditData ({}, { model, data }) {
+      return new Promise((resolve, reject) => {
+        engine_edit_data({
+          model,
+          data
+        }).then(res => {
+          const data = res.data
+          resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+
+    // 引擎创建
+    engineCreateData ({}, { model, data }) {
+      return new Promise((resolve, reject) => {
+        engine_create_data({
+          model,
+          data
+        }).then(res => {
+          const data = res.data
+          resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+
+    // 引擎删除
+    engineRemoveData ({}, { model, data }) {
+      return new Promise((resolve, reject) => {
+        engine_remove_data({
+          model,
+          data
+        }).then(res => {
+          const data = res.data
+          resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
   }
 }
