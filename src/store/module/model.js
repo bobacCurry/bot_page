@@ -4,6 +4,8 @@ import {
   create_data,
   change_status,
   remove_data,
+  pass,
+  refuse,
   engine_get_list,
   engine_edit_data,
   engine_create_data,
@@ -81,6 +83,34 @@ export default {
     removeData ({}, {model, id }) {
       return new Promise((resolve, reject) => {
         remove_data({
+          model,
+          id
+        }).then(res => {
+          const data = res.data
+          resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    // 通过
+    pass ({}, {model, id }) {
+      return new Promise((resolve, reject) => {
+        pass({
+          model,
+          id
+        }).then(res => {
+          const data = res.data
+          resolve(data)
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    // 拒绝
+    refuse ({}, {model, id }) {
+      return new Promise((resolve, reject) => {
+        refuse({
           model,
           id
         }).then(res => {

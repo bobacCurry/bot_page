@@ -52,6 +52,28 @@ export const remove_data = ({ model, id }) => {
   })
 }
 
+export const pass = ({ model, id }) => {
+  const data = {
+    id
+  }
+  return axios.request({
+    url: `backend/${model}_pass`,
+    method: 'post',
+    data
+  })
+}
+
+export const refuse = ({ model, id }) => {
+  const data = {
+    id
+  }
+  return axios.request({
+    url: `backend/${model}_refuse`,
+    method: 'post',
+    data
+  })
+}
+
 
 
 export const engine_get_list = ({ model, data }) => {

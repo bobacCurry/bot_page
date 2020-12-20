@@ -8,9 +8,6 @@
         <span>{{modalOpt.name}}</span>
       </p>
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-        <FormItem label="name" prop="name">
-          <Input v-model="formValidate.name" placeholder="请输入name"></Input>
-        </FormItem>
         <FormItem label="username" prop="username">
           <Input v-model="formValidate.username" placeholder="请输入username"></Input>
         </FormItem>
@@ -47,9 +44,6 @@
         modalOpt: {...this.modalOptObj},
         formValidate: {...this.formValidateObj},
         ruleValidate: {
-          name: [
-            { required: true, message: 'name不能为空', trigger: 'blur' }
-          ],
           username: [
             { required: true, message: 'username不能为空', trigger: 'blur' }
           ],

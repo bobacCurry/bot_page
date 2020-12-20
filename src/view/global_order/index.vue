@@ -3,16 +3,10 @@
     <Card>
       <Row type="flex" justify="start" align="middle" class="table-option">
         <Col>
-          <Card class="option-card"><Button type="info" @click="createShow()">create cburl</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
+          <Card class="option-card"><Button type="info" @click="createShow()">添加订单</Button></Card>
         </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
-          <Card size="small" class="option-card">{{k}} <i-switch v-model="tableColumnsChecked[k]"></i-switch></Card>
+          <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
         <Col>
           <Card size="small" class="option-card">搜索栏 <i-switch v-model="search.flag"></i-switch></Card>
@@ -53,17 +47,18 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name</Option>
-              <Option value="memo">memo</Option>
-              <Option value="status">status</Option>
+              <Option value="day">day (精准匹配)</Option>
+              <Option value="memo">memo (模糊匹配)</Option>
             </Select>
           </Input>
         </Col>
       </Row>
-      <Table ref="cburl" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
+      <Table ref="global_order" class="table" :loading="loading" :data="tableData" :columns="tableColumns" border>
         <template slot-scope="{ row, index }" slot="action">
           <Button type="primary" size="small" @click="editShow(index)">编辑</Button>
           <Button type="error" size="small" :style="'margin-left: 10px'" @click="remove(index)">删除</Button>
+          <Button type="success" size="small" :style="'margin-left: 10px'" @click="passData(index)">通过</Button>
+          <Button type="warning" size="small" :style="'margin-left: 10px'" @click="refuseData(index)">拒绝</Button>
         </template>
       </Table>
       <div style="margin: 10px;overflow: hidden">
@@ -97,12 +92,26 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:true,
-          memo:true,
-          status:true,
-          created_at:true,
-          updated_at:true,
-          action:true
+          day:{
+            title:'购买时长',
+            status:true,
+          },
+          memo:{
+            title:'备注',
+            status:true,
+          },
+          created_at:{
+            title:'创建时间',
+            status:true,
+          },
+          updated_at:{
+            title:'更新时间',
+            status:true,
+          },
+          action:{
+            title:'操作',
+            status:true,
+          }
         },
         modalOpt: {
           edit: true,
@@ -114,9 +123,10 @@
         },
         formValidate: {},
         formCreateDate: {
-          name: '',
+          ads: {},
+          day: '',
           memo: '',
-          status: 1,
+          type: 1,
         }
       }
     },
@@ -129,101 +139,76 @@
       }
     },
     mounted() {
-      this.mockTableData().then(data => {
-          this.tableData = data
-        })
-
+      this.mockTableData()
       this.changeTableColumns()
     },
     methods: {
       ...mapActions([
         'getList',
-        'changeStatus',
-        'removeData'
+        'removeData',
+        'pass',
+        'refuse'
       ]),
-      async mockTableData() {
-        let model = 'cburl',
+      mockTableData() {
+        let model = 'global_order',
             data = [],
             page = this.page,
             size = this.size,
             conditions = this.search.conditions
-        await this.getList({ model,page, size, conditions }).then(res => {
-          this.total = res.cburl_count
-          data = res.cburl_list
-        }).catch((e)=>{
-          this.$Notice.error({title:e.response.data.msg})
+        this.loading = true
+        this.getList({ model,page, size, conditions }).then(res => {
+          this.total = res.order_count
+          this.tableData = res.order_list
+          this.loading = false
         })
-        return Promise.resolve(data);
       },
       getTableColumns() {
         const tableColumnList = {
-          selection: {
-            type: 'selection',
-            align: 'center',
+          ads: {
+            title: '广告文本',
             fixed: 'left',
-            width: 60
-          },
-          name: {
-            title: 'name',
-            key: 'name',
-            align: 'center',
-            fixed: 'left',
-            width: 120,
-          },
-          memo: {
-            title: 'memo',
-            key: 'memo',
-            width: 150,
-          },
-          token: {
-            title: 'token',
-            key: 'token',
-            width: 150,
-          },
-          status: {
-            title: 'status',
-            key: 'status',
-            width: 150,
+            width: 200,
             sortable: true,
             render:(h, params) => {
               const row = params.row
-              const color = row.status === 0 ? 'warning' : row.status === 1 ? 'success' : 'error'
-              const text = row.status === 0 ? 'Disable' : row.status === 1 ? 'Success' : 'Fail'
-              return h('Tag', {
-                props: {
-                  type: 'dot',
-                  color: color
-                }
-              }, text)
+              return h('span',  row.ads.text)
             }
           },
+          day: {
+            title: '购买时长',
+            key: 'day',
+            width: 150,
+          },
+          memo: {
+            title: '备注',
+            key: 'memo',
+            width: 300,
+          },
           created_at: {
-            title: 'created_at',
+            title: '创建时间',
             key: 'created_at',
             width: 150,
             sortable: true
           },
           updated_at: {
-            title: 'updated_at',
+            title: '更新时间',
             key: 'updated_at',
             width: 150,
             sortable: true
           },
           action: {
-            title: 'Action',
+            title: '操作',
             slot: 'action',
-            width: 150,
+            width: 250,
             align: 'center'
           }
         }
 
         let obj = this.tableColumnsChecked
-        let data = [tableColumnList.name]
+        let data = [tableColumnList.ads]
 
         Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key]){
-            data.splice(0,0,tableColumnList[key])
-          }else if(obj[key]){
+          if(obj[key].status){
             data.push(tableColumnList[key])
           }
         })
@@ -241,14 +226,11 @@
           this.search.conditions = conditions
         }
         this.page = 1
-        this.mockTableData().then(data => {
-          this.tableData = data
-        })
+        this.mockTableData()
       },
       searchKeywords(flag){
         if (flag){
           if(this.search.type.length > 0 && this.search.keywords.length > 0){
-            this.loading = true
             this.search.conditions.type = this.search.type
             this.search.conditions.keywords = this.search.keywords
           }else if(!this.search.type){
@@ -259,7 +241,6 @@
             return
           }
         }else {
-          this.loading = true
           this.search.type = ''
           this.search.keywords = ''
           let {type,keywords,...conditions} = this.search.conditions
@@ -267,73 +248,35 @@
         }
 
         this.page = 1
-        this.mockTableData().then(data => {
-          this.loading = false
-          this.tableData = data
-        })
-      },
-      setStatus(status) {
-        let selection = this.$refs['cburl'].getSelection()
-        if(!selection.length){
-          this.$Message.warning('未选择数据')
-          return
-        }
-
-        this.$Modal.confirm({
-          title: `将 status 修改 ${status==1?'Success':'Disable'}`,
-          onOk:()=>{
-            let selectionData = this.$refs['cburl'].objData,
-                model = 'cburl',
-                id_list = [],
-                index_list = []
-            Object.keys(selectionData).forEach((index) => {
-              if(selectionData[index]._isChecked){
-                id_list.push(selectionData[index]._id)
-                index_list.push(index)
-              }
-            })
-
-            this.changeStatus({ model, id_list, status }).then(res => {
-              index_list.forEach((index) => {
-                this.tableData[index].status = status
-              })
-            }).catch((e)=>{
-              this.$Notice.error({title:e.response.data.msg})
-            })
-          }
-        })
+        this.mockTableData()
       },
       changePage(page){
         this.page = page
-        this.mockTableData().then(data => {
-          this.tableData = data
-        })
+        this.mockTableData()
       },
       changeSize(size){
         this.size = size
-        this.mockTableData().then(data => {
-          this.tableData = data
-        })
+        this.mockTableData()
       },
       createShow() {
         this.modalOpt.edit = false
         this.formValidate = this.formCreateDate
-        this.modalOpt.name = 'create cburl'
+        this.modalOpt.name = '添加订单'
         this.modalOpt.flag = true
       },
       editShow(index) {
         this.modalOpt.edit = true
         this.modalOpt.index = index
         this.formValidate = this.tableData[index]
-        this.modalOpt.name = this.tableData[index].name
+        this.modalOpt.name = this.tableData[index].ads.text
         this.modalOpt.flag = true
       },
       remove(index) {
         this.$Modal.confirm({
-          title: `删除 ${this.tableData[index].name}`,
+          title: `删除 ${this.tableData[index].ads.text}`,
           onOk:()=>{
             let id = this.tableData[index]._id,
-                model = 'cburl'
+                    model = 'global_order'
             this.removeData({ model, id }).then(res => {
               if (res.success){
                 this.tableData.splice(index,1)
@@ -357,7 +300,43 @@
       },
       modalCancel(modalOpt){
         this.modalOpt = modalOpt
-      }
+      },
+      passData(index) {
+        this.$Modal.confirm({
+          title: `通过 ${this.tableData[index].ads.text}`,
+          onOk:()=>{
+            let id = this.tableData[index]._id,
+                    model = 'global_order'
+            this.pass({ model, id }).then(res => {
+              if (res.success){
+                this.$Notice.success({title:res.msg})
+              }else {
+                this.$Message.error({title:res.msg})
+              }
+            }).catch((e)=>{
+              this.$Notice.error({title:e.response.data.msg})
+            })
+          }
+        })
+      },
+      refuseData(index) {
+        this.$Modal.confirm({
+          title: `拒绝 ${this.tableData[index].ads.text}`,
+          onOk:()=>{
+            let id = this.tableData[index]._id,
+                    model = 'global_order'
+            this.refuse({ model, id }).then(res => {
+              if (res.success){
+                this.$Notice.success({title:res.msg})
+              }else {
+                this.$Message.error({title:res.msg})
+              }
+            }).catch((e)=>{
+              this.$Notice.error({title:e.response.data.msg})
+            })
+          }
+        })
+      },
     }
   }
 </script>

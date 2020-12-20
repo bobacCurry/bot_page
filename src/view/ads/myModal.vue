@@ -20,12 +20,6 @@
             <Radio :label="0">disable</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="上次展示时间" prop="last_show">
-          <DatePicker v-model="get_last_show" type="datetime" placeholder="请选择上次展示时间"></DatePicker>
-        </FormItem>
-        <FormItem label="结束时间" prop="end_at">
-          <DatePicker v-model="get_end_at" type="datetime" placeholder="请选择结束时间"></DatePicker>
-        </FormItem>
       </Form>
       <div slot="footer">
         <Button @click="handleCancel()">取消</Button>
@@ -52,45 +46,15 @@
           ],
           status: [
             { required: true, type: 'number', message: '状态不能为空', trigger: 'change' }
-          ],
-          last_show: [
-            { required: true, type: 'date', message: '上次展示时间不能为空', trigger: 'change' }
-          ],
-          end_at: [
-            { required: true, type: 'date', message: '结束时间不能为空', trigger: 'change' }
           ]
         }
       }
-    },
-    computed: {
-      get_last_show: {
-        get: function () {
-          return this.timestamp_to_date(this.formValidate.last_show)
-        },
-        set: function (value) {
-          this.formValidate.last_show = this.date_to_timestamp(value)
-        }
-      },
-      get_end_at: {
-        get: function () {
-          return this.timestamp_to_date(this.formValidate.end_at)
-        },
-        set: function (value) {
-          this.formValidate.end_at = this.date_to_timestamp(value)
-        }
-      },
     },
     methods: {
       ...mapActions([
         'editData',
         'createData'
       ]),
-      date_to_timestamp(date){
-        return new Date(date).getTime();
-      },
-      timestamp_to_date(timestamp){
-        return new Date(timestamp)
-      },
       createSubmit (name) {
         this.modalOpt.loading = true
         this.$refs[name].validate((valid) => {

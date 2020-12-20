@@ -78,25 +78,6 @@ export default [
     ]
   },
   {
-    path: '/cburl',
-    name: 'cburl',
-    meta: {
-      hideInBread: true
-    },
-    component: Main,
-    children: [
-      {
-        path: 'cburl_page',
-        name: 'cburl_page',
-        meta: {
-          icon: ' iconfont iconcburl',
-          title: 'cburl'
-        },
-        component: () => import('@/view/cburl/index.vue')
-      }
-    ]
-  },
-  {
     path: '/chat',
     name: 'chat',
     meta: {
@@ -172,7 +153,7 @@ export default [
       }
     ]
   },
-  {
+  /*{
     path: '/order',
     name: 'order',
     meta: {
@@ -190,8 +171,27 @@ export default [
         component: () => import('@/view/order/index.vue')
       }
     ]
-  },
+  },*/
   {
+    path: '/global_order',
+    name: 'global_order',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'global_order_page',
+        name: 'global_order_page',
+        meta: {
+          icon: ' iconfont iconorder',
+          title: '订单'
+        },
+        component: () => import('@/view/global_order/index.vue')
+      }
+    ]
+  },
+  /*{
     path: '/components',
     name: 'components',
     meta: {
@@ -273,7 +273,7 @@ export default [
         component: () => import('@/view/components/icons/icons.vue')
       }
     ]
-  },
+  },*/
   {
     path: '/401',
     name: 'error_401',

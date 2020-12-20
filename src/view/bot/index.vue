@@ -53,7 +53,6 @@
                     class="search-input-select"
                     v-model="search.type"
                     @on-clear="searchKeywords(false)">
-              <Option value="name">name (模糊匹配)</Option>
               <Option value="username">username (模糊匹配)</Option>
               <Option value="token">token (模糊匹配)</Option>
               <Option value="type">类型 (模糊匹配)</Option>
@@ -103,10 +102,6 @@
             title:'选择框',
             status:true,
           },
-          username:{
-            title:'username',
-            status:true,
-          },
           token:{
             title:'token',
             status:true,
@@ -146,7 +141,6 @@
         },
         formValidate: {},
         formCreateDate: {
-          name: '',
           username: '',
           token: '',
           type: '',
@@ -198,16 +192,11 @@
             fixed: 'left',
             width: 60
           },
-          name: {
-            title: 'name',
-            key: 'name',
-            align: 'center',
-            fixed: 'left',
-            width: 120,
-          },
           username: {
             title: 'username',
             key: 'username',
+            align: 'center',
+            fixed: 'left',
             width: 150,
           },
           token: {
@@ -265,7 +254,7 @@
         }
 
         let obj = this.tableColumnsChecked
-        let data = [tableColumnList.name]
+        let data = [tableColumnList.username]
 
         Object.keys(obj).forEach(function(key) {
           if(key=='selection' && obj[key].status){

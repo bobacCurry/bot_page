@@ -5,12 +5,6 @@
         <Col>
           <Card class="option-card"><Button type="info" @click="createShow()">添加广告</Button></Card>
         </Col>
-        <Col>
-          <Card class="option-card"><Button type="success" @click="setStatus(1)">Success</Button></Card>
-        </Col>
-        <Col>
-          <Card class="option-card"><Button type="warning" @click="setStatus(0)">Disable</Button></Card>
-        </Col>
         <Col v-for="(item,k) in tableColumnsChecked" :key="k">
           <Card size="small" class="option-card">{{item.title}} <i-switch v-model="tableColumnsChecked[k].status"></i-switch></Card>
         </Col>
@@ -98,10 +92,6 @@
         tableData: [],
         tableColumns: [],
         tableColumnsChecked: {
-          selection:{
-            title:'选择框',
-            status:true,
-          },
           link:{
             title:'链接',
             status:true,
@@ -147,10 +137,7 @@
         formCreateDate: {
           text: '',
           link: '',
-          count: 0,
-          status: 0,
-          last_show: new Date().getTime(),
-          end_at: new Date().getTime(),
+          status: 0
         }
       }
     },
@@ -191,18 +178,12 @@
       },
       getTableColumns() {
         const tableColumnList = {
-          selection: {
-            type: 'selection',
-            align: 'center',
-            fixed: 'left',
-            width: 60
-          },
           text: {
             title: '广告文本',
             key: 'text',
             align: 'center',
             fixed: 'left',
-            width: 120,
+            width: 180,
           },
           link: {
             title: '链接',
@@ -210,9 +191,9 @@
             width: 200,
           },
           count: {
-            title: '点击次数',
+            title: '点击数',
             key: 'count',
-            width: 150,
+            width: 100,
             sortable: true,
           },
           status: {
@@ -268,9 +249,7 @@
         let data = [tableColumnList.text]
 
         Object.keys(obj).forEach(function(key) {
-          if(key=='selection' && obj[key].status){
-            data.splice(0,0,tableColumnList[key])
-          }else if(obj[key].status){
+          if(obj[key].status){
             data.push(tableColumnList[key])
           }
         })
@@ -317,37 +296,6 @@
         this.mockTableData().then(data => {
           this.loading = false
           this.tableData = data
-        })
-      },
-      setStatus(status) {
-        let selection = this.$refs['ads'].getSelection()
-        if(!selection.length){
-          this.$Message.warning('未选择数据')
-          return
-        }
-
-        this.$Modal.confirm({
-          title: `将 status 修改 ${status==1?'Success':'Disable'}`,
-          onOk:()=>{
-            let selectionData = this.$refs['ads'].objData,
-                model = 'ads',
-                id_list = [],
-                index_list = []
-            Object.keys(selectionData).forEach((index) => {
-              if(selectionData[index]._isChecked){
-                id_list.push(selectionData[index]._id)
-                index_list.push(index)
-              }
-            })
-
-            this.changeStatus({ model, id_list, status }).then(res => {
-              index_list.forEach((index) => {
-                this.tableData[index].status = status
-              })
-            }).catch((e)=>{
-              this.$Notice.error({title:e.response.data.msg})
-            })
-          }
         })
       },
       changePage(page){
