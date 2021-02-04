@@ -115,22 +115,41 @@ export default [
       }
     ]
   },
+  // {
+  //   path: '/menu',
+  //   name: 'menu',
+  //   meta: {
+  //     hideInBread: true
+  //   },
+  //   component: Main,
+  //   children: [
+  //     {
+  //       path: 'menu_page',
+  //       name: 'menu_page',
+  //       meta: {
+  //         icon: ' iconfont iconmenu',
+  //         title: '菜单'
+  //       },
+  //       component: () => import('@/view/menu/index.vue')
+  //     }
+  //   ]
+  // },
   {
-    path: '/menu',
-    name: 'menu',
+    path: '/filter',
+    name: 'filter',
     meta: {
       hideInBread: true
     },
     component: Main,
     children: [
       {
-        path: 'menu_page',
-        name: 'menu_page',
+        path: 'filter_page',
+        name: 'filter_page',
         meta: {
-          icon: ' iconfont iconmenu',
-          title: '菜单'
+          icon: ' iconfont iconfilter',
+          title: '屏蔽词'
         },
-        component: () => import('@/view/menu/index.vue')
+        component: () => import('@/view/filter/index.vue')
       }
     ]
   },
